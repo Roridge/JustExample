@@ -1,0 +1,39 @@
+package com.flowmellow.justexample.activities.test;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
+import com.flowmellow.justexample.activities.to.RestaurantTO;
+
+import junit.framework.TestCase;
+
+public class RestaurantTOUnitTest extends TestCase {
+
+	public void testRestaurantTOCompare() {
+
+		final List<RestaurantTO> restaurants = new ArrayList<RestaurantTO>();
+		restaurants.add(new RestaurantTO("1", "name1", 3.5D));
+		restaurants.add(new RestaurantTO("2", "name2", 1.5D));
+		restaurants.add(new RestaurantTO("3", "name2", 2.5D));
+		restaurants.add(new RestaurantTO("4", "name4", 4.5D));
+
+		final Iterator<RestaurantTO> restaurantsInterator = restaurants.iterator();
+
+	}
+
+	private void test(int position, Iterator<RestaurantTO> restaurantsInterator, String actualId, double actualRating) {
+
+		final String errorMessage = String.format(Locale.ENGLISH, "We expected to have postion %d test setup has been altered", position);
+		assertTrue(errorMessage, restaurantsInterator.hasNext());
+
+		final RestaurantTO restaurant = restaurantsInterator.next();
+		final String restaurantId = restaurant.getId();
+		final double restaurantRating = restaurant.getRatingStars();
+
+		assertEquals("", restaurantId, actualId);
+		assertEquals("", restaurantRating, actualRating);
+	}
+
+}

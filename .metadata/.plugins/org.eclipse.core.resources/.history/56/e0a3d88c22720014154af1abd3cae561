@@ -1,0 +1,64 @@
+package com.flowmellow.justexample.services.test;
+
+import com.flowmellow.justexample.R;
+import com.flowmellow.justexample.activities.JustMainActivity;
+import com.flowmellow.justexample.services.LocationService;
+import com.flowmellow.justexample.services.LocationService.LocationBinder;
+
+import android.content.Intent;
+import android.location.Location;
+import android.os.IBinder;
+import android.test.ActivityInstrumentationTestCase2;
+import android.test.AndroidTestCase;
+import android.test.ServiceTestCase;
+import android.test.UiThreadTest;
+import android.test.suitebuilder.annotation.MediumTest;
+import android.test.suitebuilder.annotation.SmallTest;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ImageButton;
+
+public class LocationServiceTest extends ServiceTestCase<LocationService> {
+
+	private LocationService service;
+
+	public LocationServiceTest() {
+		super(LocationService.class);
+	}
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+
+	}
+
+	/**
+	 * Test binding to service
+	 */
+	@MediumTest
+	public void testLocationServiceBindable() {
+		final Intent startIntent = new Intent();
+		startIntent.setClass(getContext(), LocationService.class);
+		final IBinder binder = bindService(startIntent);
+		assertNotNull("binder not retreieved while using start intent on service", binder);
+	}
+
+	/**
+	 * Test binding to service
+	 */
+	@MediumTest
+	public void testgetLocationServiceFromBind() {
+		final Intent startIntent = new Intent();
+		startIntent.setClass(getContext(), LocationService.class);
+		final IBinder binder = bindService(startIntent);
+		final LocationBinder locationBinder = (LocationBinder) binder;
+		service =  locationBinder.getService();
+	}
+
+	public void testgetPostCodeFromLocation() {
+
+		testgetLocationServiceFromBind();
+		service.getPostCode(null, null)
+
+	}
+}

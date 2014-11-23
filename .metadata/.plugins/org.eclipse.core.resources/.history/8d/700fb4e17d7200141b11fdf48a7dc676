@@ -1,0 +1,34 @@
+package com.flowmellow.justexample.activities;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.flowmellow.justexample.activities.to.RestaurantTO;
+
+import android.content.ComponentName;
+import android.os.IBinder;
+
+public class MockRestaurantsActivity extends RestaurantsActivity {
+
+	@Override
+	public void onServiceConnected(ComponentName className, IBinder service) {
+		displayRestaurants(getMockRestaurants());
+	}
+
+	private List<RestaurantTO> getMockRestaurants() {
+		/*
+		 * When sorted in order of star rating the order will be
+		 */
+		List<RestaurantTO> restaurants = new ArrayList<RestaurantTO>();
+		restaurants.add(new RestaurantTO("1", "Restaurant1", 0.5F));
+		restaurants.add(new RestaurantTO("7", "Restaurant2", 4.5F));
+		restaurants.add(new RestaurantTO("3", "Restaurant3", 5.5F));
+		restaurants.add(new RestaurantTO("4", "Restaurant4", 2.5F));
+		restaurants.add(new RestaurantTO("6", "Restaurant5", 4.0F));
+		restaurants.add(new RestaurantTO("2", "Restaurant6", 1.0F));
+		restaurants.add(new RestaurantTO("3", "Restaurant7", 2.0F));
+		restaurants.add(new RestaurantTO("5", "Restaurant8", 3.0F));
+		return restaurants;
+	}
+
+}

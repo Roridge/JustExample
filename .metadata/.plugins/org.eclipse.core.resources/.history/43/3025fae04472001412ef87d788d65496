@@ -1,0 +1,28 @@
+package com.flowmellow.justexample.activities.test;
+
+import android.content.Context;
+import android.location.LocationManager;
+
+import com.flowmellow.justexample.activities.HomeActivity;
+
+public class MockHomeActivity extends HomeActivity {
+	
+	private boolean locationServiceAvailable = false;
+	
+	public void locationServiceAvailable(boolean available) {
+		locationServiceAvailable = available;
+	}
+
+	@Override
+	public Object getSystemService(String name) {
+
+		if (name.equals(Context.LOCATION_SERVICE)) {
+			LocationManager locationManager = (LocationManager) super.getSystemService(name);
+			locationManager.setTestProviderStatus(LocationManager.GPS_PROVIDER, 0, null, 0L);
+			return locationManager;
+		}
+
+		return super.getSystemService(name);
+	}
+
+}

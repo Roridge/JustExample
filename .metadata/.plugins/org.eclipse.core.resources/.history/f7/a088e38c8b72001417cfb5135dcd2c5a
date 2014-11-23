@@ -1,0 +1,10 @@
+package com.flowmellow.justexample.activities.adapters;
+
+public class ImageCache {
+
+	public void getImage(String url) {
+		// TODO Auto-generated method stub
+		
+	}
+
+}

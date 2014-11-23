@@ -1,0 +1,64 @@
+package com.flowmellow.justexample.activities;
+
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Bundle;
+
+import com.flowmellow.justexample.LocationUtil;
+import com.flowmellow.justexample.activities.HomeActivity;
+import com.google.android.gms.location.LocationClient;
+
+public class MockHomeActivity extends HomeActivity {
+	
+	private boolean locationServiceAvailable = false;
+	private boolean readyToIntercept = false;
+	private LocationClient locationClient;
+	private Location location;
+	
+	public void locationServiceAvailable(boolean available) {
+		locationServiceAvailable = available;
+		readyToIntercept = true;
+	}
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
+	
+	/**
+	 * get the location client
+	 */
+	@Override
+	protected LocationClient createLocationClient() {
+		locationClient = super.createLocationClient();
+		return locationClient;
+	}
+
+	/**
+	 * set a mock location
+	 */
+	@Override
+	public void onConnected(Bundle bundle) {
+		super.onConnected(bundle);
+		location = LocationUtil.createLocation();
+		locationClient.setMockMode(true);
+		locationClient.setMockLocation(location);
+	}
+
+	public Object getSystemService(String name) {
+
+		if (name.equals(Context.LOCATION_SERVICE) && readyToIntercept && location != null) {
+			final String provider = (locationServiceAvailable) ? LocationManager.GPS_PROVIDER : LocationManager.NETWORK_PROVIDER;
+			final LocationManager locationManager = (LocationManager) super.getSystemService(name);
+			locationManager.addTestProvider(provider, false, false,
+                    false, false, true, true, true, 0, 5);
+			locationManager.setTestProviderEnabled(provider, true);
+			locationManager.setTestProviderLocation(provider, location);
+			return locationManager;
+		}
+
+		return super.getSystemService(name);
+	}
+	
+}

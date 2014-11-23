@@ -1,0 +1,5 @@
+package com.flowmellow.justexample.activities.adapters;
+
+public class ImageCache {
+
+}

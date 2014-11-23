@@ -1,0 +1,28 @@
+package com.flowmellow.justexample.activities.adapters;
+
+import android.widget.ImageView;
+
+public class ImageLoaderQueueItem {
+
+	// Task for the queue
+	private final String url;
+	private final ImageView imageView;
+
+	public ImageLoaderQueueItem(String url, ImageView imageView) {
+		this.url = url;
+		this.imageView = imageView;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public ImageView getImageView() {
+		return imageView;
+	}
+
+	@Override
+	public String toString() {
+		return "QueueItem [url=" + url + ", imageView=" + imageView + "]";
+	}
+}

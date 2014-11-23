@@ -1,0 +1,121 @@
+package com.flowmellow.justexample.activities.adapters;
+
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import com.flowmellow.justexample.Config;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.util.Log;
+import android.widget.ImageView;
+
+public class ImageLoader {
+
+	private static final int MAX_THREADS = 6;
+	private final ImageCache imageCache = new ImageCache();
+	private final Map<ImageView, String> imageViewsToUrlMap = Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
+	private final Handler handler = new Handler();
+	private final ExecutorService executorService;
+
+	public ImageLoader(Context applicationContext) {
+		executorService = Executors.newFixedThreadPool(MAX_THREADS);
+	}
+
+	public void displayImage(ImageView imageView, String url) {
+		imageViewsToUrlMap.put(imageView, url);
+		final Bitmap image = imageCache.getImage(url);
+
+		if (image == null) {
+			queueForLoad(imageView, url);
+		} else {
+			imageView.setImageBitmap(image);
+		}
+	}
+
+	private void queueForLoad(ImageView imageView, String url) {
+
+		final ImageLoaderQueueItem queueItem = new ImageLoaderQueueItem(imageView, url);
+		executorService.execute(new ImageRetriever(queueItem));
+	}
+
+	/**
+	 * Cache the image
+	 */
+	private void cacheImage(final ImageLoaderQueueItem queueItem, final Bitmap bitmap) {
+		imageCache.putImage(queueItem, bitmap);
+	}
+
+	/**
+	 * Post the ImageDisplayRunnable in a handler to be displayed on the UI thread.
+	 */
+	private void display(final ImageLoaderQueueItem queueItem, final Bitmap bitmap) {
+		final ImageDisplayRunnable imageDisplayer = new ImageDisplayRunnable(queueItem, bitmap);
+		handler.post(imageDisplayer);
+	}
+
+	private Bitmap getBitmap(String url) {
+		Bitmap bitmap = null;
+
+		try {
+			final InputStream inputStream = new URL(url).openStream();
+			bitmap = BitmapFactory.decodeStream(inputStream);
+		} catch (Throwable ex) {
+			Log.w(Config.LOG_TAG, "Error downloading or decoding a logo for url: " + url);
+			ex.printStackTrace();
+			if (ex instanceof OutOfMemoryError) {
+				clearCache();
+			}
+		}
+		return bitmap;
+	}
+
+	private void clearCache() {
+		imageCache.clear();
+	}
+
+	class ImageRetriever implements Runnable {
+
+		private final ImageLoaderQueueItem queueItem;
+
+		protected ImageRetriever(final ImageLoaderQueueItem queueItem) {
+			this.queueItem = queueItem;
+		}
+
+		@Override
+		public void run() {
+
+			final String url = queueItem.getUrl();
+			final Bitmap image = getBitmap(url);
+
+			if (image != null) {
+				cacheImage(queueItem, image);
+				display(queueItem, image);
+			}
+		}
+	}
+
+	class ImageDisplayRunnable implements Runnable {
+
+		private final ImageLoaderQueueItem queueItem;
+		private final Bitmap bitmap;
+
+		protected ImageDisplayRunnable(final ImageLoaderQueueItem queueItem, final Bitmap bitmap) {
+			this.queueItem = queueItem;
+			this.bitmap = bitmap;
+		}
+
+		@Override
+		public void run() {
+			queueItem.getImageView().setImageBitmap(bitmap);
+		}
+
+	}
+}

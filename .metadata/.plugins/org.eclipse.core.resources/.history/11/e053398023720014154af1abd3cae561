@@ -1,0 +1,5 @@
+package com.flowmellow.justexample.services.test;
+
+public class MockLocation {
+
+}

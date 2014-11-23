@@ -1,0 +1,60 @@
+package com.flowmellow.justexample.activities;
+
+import android.content.Context;
+import android.content.Intent;
+import android.test.ActivityInstrumentationTestCase2;
+import android.test.UiThreadTest;
+import android.test.suitebuilder.annotation.SmallTest;
+import android.view.View;
+import android.widget.ProgressBar;
+
+import com.flowmellow.justexample.R;
+import com.flowmellow.justexample.RestaurantUtil;
+
+public class RestaurantActivityTest extends ActivityInstrumentationTestCase2<RestaurantsActivity> {
+
+	private RestaurantsActivity activity;
+	private Context context;
+
+	public RestaurantActivityTest() {
+		super(RestaurantsActivity.class);
+	}
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		
+	}
+	
+	@SmallTest
+	@UiThreadTest
+	public void testLocationProgressBarIsGone() {
+		setupWithoutPostcode();
+		final ProgressBar restaurantProgressBar = (ProgressBar) activity.findViewById(R.id.restaurantProgressBar);
+		final int restaurantProgressBarVisability = restaurantProgressBar.getVisibility();
+		final String errorMessage = "restaurant progress bar should not be visible if no postcode was passed in";
+		assertEquals(errorMessage, View.GONE, restaurantProgressBarVisability);
+	}
+	
+	@SmallTest
+	@UiThreadTest
+	public void testDisplayRestaurants() {
+		setupWithPostcode();
+		activity.displayRestaurants(RestaurantUtil.getMockRestaurants());
+	}
+
+	private void setupWithPostcode() {
+		context = getInstrumentation().getTargetContext();
+		final Intent intent = new Intent(context, RestaurantsActivity.class);
+		intent.putExtra(RestaurantsActivity.POSTCODE_INTENT, RestaurantUtil.POSTCODE);
+		setActivityIntent(intent);
+		activity = getActivity();
+		
+	}
+	
+	private void setupWithoutPostcode() {
+		activity = getActivity();
+	}
+	
+	
+}

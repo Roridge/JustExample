@@ -1,0 +1,18 @@
+package com.flowmellow.justexample.activities;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import com.flowmellow.justexample.RestaurantUtil;
+import com.flowmellow.justexample.activities.to.RestaurantTO;
+
+import android.content.ComponentName;
+import android.os.IBinder;
+
+public class MockRestaurantsActivity extends RestaurantsActivity {
+
+	@Override
+	public void onServiceConnected(ComponentName className, IBinder service) {
+		displayRestaurants(RestaurantUtil.getMockRestaurants());
+	}
+}

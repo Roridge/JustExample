@@ -1,0 +1,11 @@
+package com.flowmellow.justexample.activities.adapters;
+
+import android.graphics.Bitmap;
+
+public class ImageCache {
+
+	public Bitmap getImage(String url) {
+		return null;
+	}
+
+}

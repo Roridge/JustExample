@@ -1,0 +1,7 @@
+package com.flowmellow.example.justeat.services.listeners;
+
+public interface LocationSeviceListener {
+
+	void postCodeHandler(String postcode);
+	
+}

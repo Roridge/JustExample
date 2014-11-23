@@ -1,0 +1,19 @@
+package com.flowmellow.justexample;
+
+import android.location.Location;
+
+public class LocationUtil {
+	
+	private static final String PROVIDER = "flp";
+	
+
+	public Location createLocation(double lat, double lng, float accuracy) {
+		// Create a new Location
+		Location newLocation = new Location(PROVIDER);
+		newLocation.setLatitude(lat);
+		newLocation.setLongitude(lng);
+		newLocation.setAccuracy(accuracy);
+		return newLocation;
+	}
+	
+}

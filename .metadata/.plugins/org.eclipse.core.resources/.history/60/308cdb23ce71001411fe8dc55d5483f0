@@ -1,0 +1,112 @@
+package com.flowmellow.justexample.services;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import com.flowmellow.justexample.Config;
+import com.flowmellow.justexample.activities.listeners.LocationListener;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.LocationRequest;
+
+import android.app.Activity;
+import android.app.Service;
+import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.location.Location;
+import android.os.Binder;
+import android.os.IBinder;
+import android.util.Log;
+
+public class CustomLocationService extends Service {
+
+	// Binder given to clients
+	private final IBinder binder = new LocationBinder();
+
+	public class LocationBinder extends Binder {
+
+		public LocationService getService() {
+			return LocationService.this;
+		}
+	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		return binder;
+	}
+
+	/**
+	 * 
+	 * @param locationClient
+	 *            used to get users location
+	 * @param activity
+	 *            context used to run on the UI thread
+	 * @param loctionListener
+	 *            callback invoked to return postcode to activity
+	 */
+	public void requestPostcodeByLocation(final Activity activity, final LocationListener loctionListener,
+			final LocationClient locationClient) {
+
+		new Thread(new Runnable() {
+			public void run() {
+
+				// short circuit if locationClient is not connected
+				if (!locationClient.isConnected()) {
+					Log.e(Config.LOG_TAG, "LocationClient is disconnected");
+					return;
+				}
+
+				final Location location = locationClient.getLastLocation();
+
+				if (location == null) {
+					final LocationRequest locationrequest = LocationRequest.create();
+					locationrequest.setInterval(Long.parseLong(etLocationInterval.getText().toString()));
+					locationclient.requestLocationUpdates(locationrequest, this);
+				}
+
+				if (location != null) {
+					final String postcode = getPostCode(activity, location);
+					postcodeCallback(activity, loctionListener, postcode);
+				} else {
+					Log.e(Config.LOG_TAG, "Location is unavailable");
+				}
+			}
+		}).start();
+	}
+
+	/**
+	 * Call back runs on the UI Thread
+	 */
+	private void postcodeCallback(final Activity activity, final LocationListener loctionListener, final String postcode) {
+
+		activity.runOnUiThread(new Runnable() {
+			public void run() {
+				loctionListener.postcodeCallback(postcode);
+			}
+		});
+	}
+
+	private String getPostCode(final Activity activity, final Location location) {
+		String postcode = null;
+		List<Address> addresses = null;
+
+		try {
+			final Geocoder geocoder = new Geocoder(activity, Locale.getDefault());
+			addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+		} catch (IOException e) {
+			Log.e(Config.LOG_TAG, "IO Exception in getFromLocation(): " + e.getMessage());
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			String errorString = "Illegal arguments " + Double.toString(location.getLatitude()) + " , "
+					+ Double.toString(location.getLongitude()) + " passed to address service : " + e.getMessage();
+			Log.e(Config.LOG_TAG, errorString);
+			e.printStackTrace();
+		}
+
+		if (addresses != null && addresses.size() > 0) {
+			postcode = addresses.get(0).getPostalCode();
+		}
+		return postcode;
+	}
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App Strings -->
+    <string name="app_name">Just Eat</string>
+    
+    <!-- UI View Strigns -->
+    <string name="location_button_text">Location</string>
+    <string name="search_button_text">Search</string>
+    
+    <!-- Helper messages -->
+    <string name="helper_missing_postcode">Please enter postcode</string>
+    
+    <!-- UI Descriptions -->
+    <string name="restaurant_logo_description">Restaurants Logo</string>
+    <string name="location_button_description">Detect location</string>
+    <string name="search_button_description">Search by postcode</string>
+
+</resources>

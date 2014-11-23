@@ -1,0 +1,49 @@
+package com.flowmellow.justexample.services;
+
+import java.util.ArrayList;
+
+import android.app.Service;
+import android.content.Intent;
+import android.os.Binder;
+import android.os.IBinder;
+
+import com.flowmellow.justexample.activities.listeners.RestaurantListener;
+import com.flowmellow.justexample.activities.to.RestaurantTO;
+
+public class RestaurantService extends Service {
+
+	private final IBinder binder = new RestaurantBinder();
+
+	public class RestaurantBinder extends Binder {
+
+		public RestaurantService getService() {
+			return RestaurantService.this;
+		}
+	}
+
+	@Override
+	public IBinder onBind(Intent intent) {
+		return binder;
+	}
+
+	public void requestRestaurant(final String postcode, final RestaurantListener restaurantListener) {
+		restaurantListener.displayRestaurants(new ArrayList<RestaurantTO>());
+	}
+
+}
+
+
+private class RestaurantRetrieverTask implements Runnable {
+
+	private String url;
+	
+	private RestaurantRetrieverTask(String url) {
+		this.url = url;
+	}
+	
+	
+	@Override
+	public void run() {
+		
+	}
+}

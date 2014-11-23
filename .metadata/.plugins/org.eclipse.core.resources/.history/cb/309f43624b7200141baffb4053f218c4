@@ -1,0 +1,49 @@
+package com.flowmellow.justexample.activities.test;
+
+import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
+import android.support.v7.widget.LinearLayoutCompat.OrientationMode;
+
+import com.flowmellow.justexample.LocationUtil;
+import com.flowmellow.justexample.activities.HomeActivity;
+import com.google.android.gms.location.LocationClient;
+
+public class MockHomeActivity extends HomeActivity {
+	
+	private boolean locationServiceAvailable = true;
+	private LocationClient locationClient;
+	private Location location;
+	
+	public void locationServiceAvailable(boolean available) {
+		locationServiceAvailable = available;
+	}
+
+	@Override
+	public Object getSystemService(String name) {
+
+		if (name.equals(Context.LOCATION_SERVICE)) {
+			final LocationManager locationManager = (LocationManager) super.getSystemService(name);
+			final String provider = (locationServiceAvailable) ? LocationManager.GPS_PROVIDER : LocationManager.PROVIDERS_CHANGED_ACTION;
+			
+			locationManager.setTestProviderStatus(provider, 0, null, 0L);
+			
+			return locationManager;
+		}
+
+		return super.getSystemService(name);
+	}
+	
+	
+	@Override
+	protected LocationClient createLocationClient() {
+		location = LocationUtil.createLocation();
+		locationClient = super.createLocationClient();
+		locationClient.setMockMode(true);
+		locationClient.setMockLocation(location);
+		
+		this.locationClient = locationClient;
+		return locationClient;
+	
+
+}

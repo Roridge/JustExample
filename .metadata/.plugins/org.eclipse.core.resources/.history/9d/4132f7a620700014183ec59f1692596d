@@ -1,0 +1,11 @@
+package com.flowmellow.justexample.activities.to;
+
+public class RestaurantTO {
+
+	private final String Id;
+	private final String Name;
+	private final double RatingStars;
+	
+	
+	
+}

@@ -1,0 +1,70 @@
+1416341329828	Move compilation unit
+1416341389963	Rename package 'com.flowmellow.justexample.activitys'
+1416341744523	Move compilation unit
+1416341755149	Rename package 'com.flowmellow.justexample.activities'
+1416341764765	Move compilation unit
+1416342456844	Delete element
+1416418818806	Move compilation unit
+1416418821064	Delete element
+1416421027012	Rename package 'com.flowmellow.justexample.activites'
+1416421032957	Move compilation unit
+1416428456587	Rename type 'DisplayRestaurantsActivity'
+1416515368783	Move compilation unit
+1416515920896	Rename type 'LocationServiceImpl'
+1416516508993	Rename field 'mConnection'
+1416516619265	Delete element
+1416516620479	Delete element
+1416516627846	Rename type 'DeafultRestaurantService'
+1416516636041	Rename type 'DefaultLocationService'
+1416517218191	Rename type 'LocationSeviceListener'
+1416517795913	Rename method 'requestPostCode'
+1416517802039	Rename method 'postCodeCallback'
+1416517807109	Rename local variable 'postCode'
+1416517813212	Rename method 'requestPostCode'
+1416521789017	Rename method 'requestPostcode'
+1416521800648	Rename method 'requestPostcodeByLocaton'
+1416609053186	Rename type 'LocationService'
+1416609090694	Rename type 'CustomLocationService'
+1416609100290	Rename type 'LocationListener'
+1416609418679	Rename local variable 'loctionListener'
+1416616704775	Rename local variable 'loadSettingText'
+1416651796027	Rename type 'JustMainActivity'
+1416651832419	Rename type 'JustDisplayRestaurantsActivity'
+1416667629397	Rename method 'isProviderDisabled'
+1416667638879	Rename method 'isGPSPrividerDisabled'
+1416669384672	Rename method 'postcodeCallback'
+1416672379336	Rename method 'requestRestaurantByLocation'
+1416672387260	Rename method 'requestRestaurantByPostcode'
+1416672435324	Copy file
+1416672446580	Rename resource 'activity_restaurants.xml'
+1416672582807	Rename resource 'activity_just_main.xml'
+1416673145873	Delete element
+1416673160600	Move compilation unit
+1416687611981	Rename resource 'version.xml'
+1416689647991	Rename method 'DisplayImage'
+1416689893316	Rename field 'imageViews'
+1416690075012	Rename local variable 'image'
+1416690148748	Rename type 'MemoryCache'
+1416692581000	Rename local variable 'i'
+1416692698558	Rename type 'QueueItem'
+1416692796000	Rename method 'queueView'
+1416693310237	Rename field 'imageLoaderQueueItem'
+1416694935432	Rename method 'cache'
+1416695062019	Rename type 'ImageDisplayer'
+1416695627174	Rename method 'imageViewReused'
+1416696050870	Rename local variable 'urlKey'
+1416696150811	Rename field 'imageViewsToUrlMap'
+1416697617683	Rename field 'cache'
+1416697947226	Rename type 'ImageRetriever'
+1416697951860	Delete element
+1416697982380	Rename type 'ImageDisplayRunnable'
+1416697987709	Rename type 'ImageDisplay'
+1416698000489	Rename type 'ImageRetrieverRunnable'
+1416741058751	Rename method 'convertJsonObject'
+1416741070921	Rename method 'convertJsonArray'
+1416741294531	Rename method 'exstractLogoUrl'
+1416741309100	Rename method 'exstractRestaurant'
+1416742602529	Rename method 'getHttpUriRequest'
+1416742860880	Rename local variable 'imageDisplayer'
+1416744114786	Move compilation units
+1416749381414	Rename local variable 'vi'

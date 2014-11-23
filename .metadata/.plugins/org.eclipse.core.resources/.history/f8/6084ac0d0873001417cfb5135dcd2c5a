@@ -1,0 +1,23 @@
+package com.flowmellow.justexample;
+
+import org.apache.http.client.methods.HttpUriRequest;
+
+public class Config {
+
+	public static final String LOG_TAG = "JustTag";
+	public static final String RESTAURANTS_URI = "http://api-interview.just-eat.com/restaurants?q=";
+	public static final String RATING_OUT_OF  = "/6";
+	
+	public static final int MAX_POSTCODE_LENGTH = 8;
+	public static final int SHORTEST_POSTCODE_LENGTH = 5;
+	
+
+	
+	public static final void setHeaders(HttpUriRequest httpget) {
+		httpget.setHeader("Accept-Tenant", "uk");
+		httpget.setHeader("Accept-Language", "en-GB");
+		httpget.setHeader("Accept-Charset", "utf-8");
+		httpget.setHeader("Authorization", "Basic VGVjaFRlc3RBUEk6dXNlcjI=");
+		httpget.setHeader("Host", "api-interview.just-eat.com");
+	}
+}

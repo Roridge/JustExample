@@ -1,0 +1,8 @@
+package com.flowmellow.example.justeat;
+
+public class Config {
+
+	public static final String LOG_TAG = "JustTag";
+	public static final String RESTAURANTS_URI = "http://api-interview.just-eat.com/restaurants?q=";
+	public static final String RATING_OUT_OF  = "/6";
+}
