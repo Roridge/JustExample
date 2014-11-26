@@ -32,7 +32,7 @@ public class BasicRestaurantService extends Service implements RestaurantService
 	private final RestaurantConverter converter = new RestaurantConverter();
 	private final ExecutorService executorService = Executors.newFixedThreadPool(MAX_THREADS);
 
-	public class BasicRestaurantService extends Binder {
+	public class RestaurantBinder extends Binder {
 
 		public BasicRestaurantService getService() {
 			return BasicRestaurantService.this;
@@ -53,8 +53,8 @@ public class BasicRestaurantService extends Service implements RestaurantService
 	 * Post the ImageDisplayRunnable in a handler to be displayed on the UI
 	 * thread.
 	 */
-	private void callback(final  List<RestaurantTO> resturants, final RestaurantListener restaurantListener) {
-		final RestaurantCallBackTask restaurantCallBackTask = new RestaurantCallBackTask(resturants, restaurantListener);
+	private void callback(final  List<RestaurantTO> Restaurants, final RestaurantListener restaurantListener) {
+		final RestaurantCallBackTask restaurantCallBackTask = new RestaurantCallBackTask(Restaurants, restaurantListener);
 		handler.post(restaurantCallBackTask);
 	}
 
@@ -105,17 +105,17 @@ public class BasicRestaurantService extends Service implements RestaurantService
 	 */
 	class RestaurantCallBackTask implements Runnable {
 
-		private final List<RestaurantTO> resturants;
+		private final List<RestaurantTO> Restaurants;
 		private final RestaurantListener restaurantListener;
 
-		protected RestaurantCallBackTask(final List<RestaurantTO> resturants, final RestaurantListener restaurantListener) {
-			this.resturants = resturants;
+		protected RestaurantCallBackTask(final List<RestaurantTO> Restaurants, final RestaurantListener restaurantListener) {
+			this.Restaurants = Restaurants;
 			this.restaurantListener = restaurantListener;
 		}
 
 		@Override
 		public void run() {
-			restaurantListener.displayRestaurants(resturants);
+			restaurantListener.displayRestaurants(Restaurants);
 		}
 	}
 }

@@ -15,10 +15,10 @@ public class RestaurantTOUnitTest extends TestCase {
 	public void testRestaurantTOCompare() {
 
 		final List<RestaurantTO> restaurants = new ArrayList<RestaurantTO>();
-		restaurants.add(new RestaurantTO(1, "name1", 3.5F, ""));
-		restaurants.add(new RestaurantTO(2, "name2", 1.5F, ""));
-		restaurants.add(new RestaurantTO(3, "name3", 2.5F, ""));
-		restaurants.add(new RestaurantTO(4, "name4", 4.5F, ""));
+		restaurants.add(new RestaurantTO(1, "name1", 3.5F, 1, ""));
+		restaurants.add(new RestaurantTO(2, "name2", 1.5F, 2, ""));
+		restaurants.add(new RestaurantTO(3, "name3", 2.5F, 3, ""));
+		restaurants.add(new RestaurantTO(4, "name4", 4.5F, 4, ""));
 		
 		// sort order by rating
 		Collections.sort(restaurants);

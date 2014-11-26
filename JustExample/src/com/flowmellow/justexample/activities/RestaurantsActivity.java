@@ -47,6 +47,14 @@ public class RestaurantsActivity extends Activity implements RestaurantListener 
 		startRequest();
 	}
 
+	@Override
+	protected void onStop() {
+		super.onStop();
+
+		// Unbind from RestaurantService
+		restaurantServiceConnector.unbindFromService();
+	}
+
 	private void startRequest() {
 
 		final Intent intent = getIntent();
@@ -60,14 +68,6 @@ public class RestaurantsActivity extends Activity implements RestaurantListener 
 		} else {
 			noRestaurantsFound();
 		}
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-
-		// Unbind from RestaurantService
-		restaurantServiceConnector.unbindFromService();
 	}
 
 	protected void noRestaurantsFound() {
