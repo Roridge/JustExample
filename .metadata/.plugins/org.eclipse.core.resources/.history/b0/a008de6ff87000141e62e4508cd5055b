@@ -1,7 +1,0 @@
-package com.flowmellow.justexample.activities.listeners;
-
-public interface LocationListener {
-
-	void postCodeCallback(String result);
-	
-}
