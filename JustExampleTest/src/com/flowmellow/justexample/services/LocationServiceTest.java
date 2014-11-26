@@ -1,8 +1,8 @@
 package com.flowmellow.justexample.services;
 
 import com.flowmellow.justexample.LocationUtil;
-import com.flowmellow.justexample.services.LocationService;
-import com.flowmellow.justexample.services.LocationService.LocationBinder;
+import com.flowmellow.justexample.services.BasicLocationService;
+import com.flowmellow.justexample.services.BasicLocationService.LocationBinder;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,13 +11,13 @@ import android.os.IBinder;
 import android.test.ServiceTestCase;
 import android.test.suitebuilder.annotation.MediumTest;
 
-public class LocationServiceTest extends ServiceTestCase<LocationService> {
+public class LocationServiceTest extends ServiceTestCase<BasicLocationService> {
 
-	private LocationService service;
+	private BasicLocationService service;
 	private Context context;
 
 	public LocationServiceTest() {
-		super(LocationService.class);
+		super(BasicLocationService.class);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class LocationServiceTest extends ServiceTestCase<LocationService> {
 	@MediumTest
 	public void testLocationServiceBindable() {
 		final Intent startIntent = new Intent();
-		startIntent.setClass(getContext(), LocationService.class);
+		startIntent.setClass(getContext(), BasicLocationService.class);
 		final IBinder binder = bindService(startIntent);
 		assertNotNull("binder not retreieved while using start intent on service", binder);
 	}
@@ -49,7 +49,7 @@ public class LocationServiceTest extends ServiceTestCase<LocationService> {
 	@MediumTest
 	public void testgetLocationServiceFromBind() {
 		final Intent startIntent = new Intent();
-		startIntent.setClass(getContext(), LocationService.class);
+		startIntent.setClass(getContext(), BasicLocationService.class);
 		final IBinder binder = bindService(startIntent);
 		final LocationBinder locationBinder = (LocationBinder) binder;
 		service = locationBinder.getService();

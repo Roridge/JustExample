@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="android.content.ContentResolver"/>
-<fullyQualifiedTypeName name="android.test.IsolatedContext"/>
-<fullyQualifiedTypeName name="android.test.mock.MockContentResolver"/>
-<fullyQualifiedTypeName name="android.test.ActivityUnitTestCase"/>
-<fullyQualifiedTypeName name="com.flowmellow.justexample.activities.HomeActivity"/>
-<fullyQualifiedTypeName name="android.test.suitebuilder.annotation.SmallTest"/>
-<fullyQualifiedTypeName name="android.test.mock.MockContext"/>
-<fullyQualifiedTypeName name="com.google.android.gms.drive.internal.ac"/>
-<fullyQualifiedTypeName name="android.location.Criteria"/>
-<fullyQualifiedTypeName name="android.location.Location"/>
-<fullyQualifiedTypeName name="com.google.android.gms.location.LocationClient"/>
 <fullyQualifiedTypeName name="android.support.v7.widget.LinearLayoutCompat.OrientationMode"/>
-<fullyQualifiedTypeName name="java.lang.Override"/>
 <fullyQualifiedTypeName name="com.flowmellow.justexample.activities.test.MockHomeActivity"/>
 <fullyQualifiedTypeName name="com.google.android.gms.internal.in"/>
 <fullyQualifiedTypeName name="com.flowmellow.justexample.services.RestaurantService.RestaurantBinder"/>
@@ -24,7 +12,6 @@
 <fullyQualifiedTypeName name="java.util.Set"/>
 <fullyQualifiedTypeName name="android.widget.ProgressBar"/>
 <fullyQualifiedTypeName name="android.view.View"/>
-<fullyQualifiedTypeName name="com.flowmellow.justexample.services.RestaurantService"/>
 <fullyQualifiedTypeName name="android.content.Intent"/>
 <fullyQualifiedTypeName name="com.flowmellow.justexample.activities.MockRestaurantsActivity"/>
 <fullyQualifiedTypeName name="android.content.ServiceConnection"/>
@@ -60,4 +47,17 @@
 <fullyQualifiedTypeName name="android.test.suitebuilder.annotation.LargeTest"/>
 <fullyQualifiedTypeName name="android.util.Log"/>
 <fullyQualifiedTypeName name="com.flowmellow.justexample.R.string"/>
+<fullyQualifiedTypeName name="java.lang.Override"/>
+<fullyQualifiedTypeName name="com.flowmellow.justexample.services.LocationService"/>
+<fullyQualifiedTypeName name="com.flowmellow.justexample.services.BasicLocationService.LocationBinder"/>
+<fullyQualifiedTypeName name="com.flowmellow.justexample.services.BasicLocationService"/>
+<fullyQualifiedTypeName name="com.flowmellow.justexample.services.BasicRestaurantService"/>
+<fullyQualifiedTypeName name="com.flowmellow.justexample.services.RestaurantService"/>
+<fullyQualifiedTypeName name="com.flowmellow.justexample.services.BasicRestaurantService.RestaurantBinder"/>
+<fullyQualifiedTypeName name="com.flowmellow.justexample.activities.connectors.LocationServiceConnector"/>
+<fullyQualifiedTypeName name="com.google.android.gms.location.LocationListener"/>
+<fullyQualifiedTypeName name="com.flowmellow.justexample.activities.listeners.CustomLocationListener"/>
+<fullyQualifiedTypeName name="android.test.mock.MockApplication"/>
+<fullyQualifiedTypeName name="com.flowmellow.justexample.activities.HomeActivity"/>
+<fullyQualifiedTypeName name="com.flowmellow.justexample.activities.HomeActivityUnitTest.MockHomeActivity"/>
 </qualifiedTypeNameHistroy>

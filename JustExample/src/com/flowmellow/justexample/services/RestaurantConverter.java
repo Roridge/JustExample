@@ -15,23 +15,23 @@ import com.flowmellow.justexample.activities.to.RestaurantTO;
 public class RestaurantConverter {
 
 	public List<RestaurantTO> convertRestaurantResponse(final String json) {
-		final List<RestaurantTO> resturants = new ArrayList<RestaurantTO>();
+		final List<RestaurantTO> Restaurants = new ArrayList<RestaurantTO>();
 
 		try {
 
 			final JSONObject reader = new JSONObject(json);
-			final JSONArray resturantsArray = reader.getJSONArray("Restaurants");
+			final JSONArray RestaurantsArray = reader.getJSONArray("Restaurants");
 
-			for (int i = 0; i < resturantsArray.length(); i++) {
-				final JSONObject restaurant = (JSONObject) resturantsArray.get(i);
-				resturants.add(extractRestaurant(restaurant));
+			for (int i = 0; i < RestaurantsArray.length(); i++) {
+				final JSONObject restaurant = (JSONObject) RestaurantsArray.get(i);
+				Restaurants.add(extractRestaurant(restaurant));
 			}
 
 		} catch (Exception e) {
 			Log.e(Config.LOG_TAG, "Error Executing HTTP get Request. " + e.getMessage());
 			e.printStackTrace();
 		}
-		return resturants;
+		return Restaurants;
 	}
 
 	private RestaurantTO extractRestaurant(final JSONObject restaurant) throws JSONException {

@@ -2,9 +2,8 @@ package com.flowmellow.justexample.activities;
 
 import com.flowmellow.justexample.Config;
 import com.flowmellow.justexample.R;
+import com.flowmellow.justexample.activities.connectors.LocationServiceConnector;
 import com.flowmellow.justexample.activities.listeners.CustomLocationListener;
-import com.flowmellow.justexample.services.LocationService;
-import com.flowmellow.justexample.services.LocationService.LocationBinder;
 
 import android.util.Log;
 import android.view.View;
@@ -15,23 +14,20 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.ServiceConnection;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.IBinder;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 
-public class HomeActivity extends Activity implements OnClickListener, LocationListener, ServiceConnection, CustomLocationListener,
+public class HomeActivity extends Activity implements OnClickListener, LocationListener, CustomLocationListener,
 		GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 
 	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
@@ -42,10 +38,9 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 	private ProgressBar locationProgressBar;
 
 	private LocationClient locationClient;
-	private LocationService locationService;
+	private LocationServiceConnector locationServiceConnector;
 	private LocationManager locationManager;
 	private boolean isLocationClientConnected = false;
-	private boolean isLocationServiceBound = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +57,7 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 
 		locationClient = getLocationClient();
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		locationServiceConnector = new LocationServiceConnector(this, this, this);
 	}
 
 	@Override
@@ -72,8 +68,7 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 		locationClient.connect();
 
 		// Bind to LocationService
-		final Intent intent = new Intent(this, LocationService.class);
-		bindService(intent, this, Context.BIND_AUTO_CREATE);
+		locationServiceConnector.bindToService();
 	}
 
 	@Override
@@ -90,10 +85,7 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 		}
 
 		// Unbind from LocationService
-		if (isLocationServiceBound) {
-			unbindService(this);
-			isLocationServiceBound = false;
-		}
+		locationServiceConnector.unbindFromService();
 	}
 
 	@Override
@@ -172,7 +164,7 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 		String postcode = null;
 
 		if (location != null) {
-			postcode = locationService.getPostCode(this, location);
+			postcode = locationServiceConnector.getPostCode(location);
 		}
 
 		displayPostcode(postcode);
@@ -207,12 +199,7 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 		}
 
 		locationProgressBar.setVisibility(View.VISIBLE);
-
-		if (isLocationServiceBound) {
-			locationService.requestPostcodeByLocation(this, this, this, locationClient);
-		} else {
-			Log.d(Config.LOG_TAG, "location service was not bound");
-		}
+		locationServiceConnector.requestPostcodeByLocation(locationClient);
 	}
 
 	/**
@@ -220,6 +207,13 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 	 * {@code searchEditText}
 	 */
 	private void requestRestaurantsByLocation() {
+
+		// short circuit if locationManager is not connected
+		if (isNetworkProviderDisabled()) {
+			showNoLocationWarningDialog();
+			return;
+		}
+		
 		String postcode = searchEditText.getText().toString();
 
 		if (postcode != null && !postcode.isEmpty()) {
@@ -239,18 +233,6 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 		} else {
 			Toast.makeText(this, getString(R.string.helper_missing_postcode), Toast.LENGTH_LONG).show();
 		}
-	}
-
-	@Override
-	public void onServiceConnected(ComponentName className, IBinder service) {
-		LocationBinder binder = (LocationBinder) service;
-		locationService = binder.getService();
-		isLocationServiceBound = true;
-	}
-
-	@Override
-	public void onServiceDisconnected(ComponentName arg0) {
-		isLocationServiceBound = false;
 	}
 
 	protected void showNoLocationWarningDialog() {
@@ -297,5 +279,14 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 	 */
 	protected boolean isGPSProviderDisabled() {
 		return !locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+	}
+
+	/**
+	 * Check if network provider is Disabled
+	 * 
+	 * @return {@code true} if disabled, {@code false} if enabled.
+	 */
+	protected boolean isNetworkProviderDisabled() {
+		return !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 	}
 }

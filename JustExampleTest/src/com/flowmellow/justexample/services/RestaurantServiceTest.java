@@ -5,8 +5,8 @@ import java.util.List;
 import com.flowmellow.justexample.LocationUtil;
 import com.flowmellow.justexample.activities.listeners.RestaurantListener;
 import com.flowmellow.justexample.activities.to.RestaurantTO;
-import com.flowmellow.justexample.services.RestaurantService;
-import com.flowmellow.justexample.services.RestaurantService.RestaurantBinder;
+import com.flowmellow.justexample.services.BasicRestaurantService;
+import com.flowmellow.justexample.services.BasicRestaurantService.RestaurantBinder;
 
 import android.content.Intent;
 import android.os.IBinder;
@@ -15,12 +15,12 @@ import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.MediumTest;
 import android.util.Log;
 
-public class RestaurantServiceTest extends ServiceTestCase<RestaurantService> {
+public class RestaurantServiceTest extends ServiceTestCase<BasicRestaurantService> {
 
-	private RestaurantService service;
+	private BasicRestaurantService service;
 
 	public RestaurantServiceTest() {
-		super(RestaurantService.class);
+		super(BasicRestaurantService.class);
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class RestaurantServiceTest extends ServiceTestCase<RestaurantService> {
 	@MediumTest
 	public void testRestaurantServiceBindable() {
 		final Intent startIntent = new Intent();
-		startIntent.setClass(getContext(), RestaurantService.class);
+		startIntent.setClass(getContext(), BasicRestaurantService.class);
 		final IBinder binder = bindService(startIntent);
 		assertNotNull("binder not retreieved while using start intent on service", binder);
 	}
@@ -50,7 +50,7 @@ public class RestaurantServiceTest extends ServiceTestCase<RestaurantService> {
 	@MediumTest
 	public void testgetRestaurantServiceFromBind() {
 		final Intent startIntent = new Intent();
-		startIntent.setClass(getContext(), RestaurantService.class);
+		startIntent.setClass(getContext(), BasicRestaurantService.class);
 		final IBinder binder = bindService(startIntent);
 		final RestaurantBinder restaurantBinder = (RestaurantBinder) binder;
 		service = restaurantBinder.getService();
