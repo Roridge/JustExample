@@ -1,9 +1,12 @@
 package com.flowmellow.justexample.activities;
 
+import com.flowmellow.justexample.AppController;
+import com.flowmellow.justexample.BasicAppController;
 import com.flowmellow.justexample.Config;
 import com.flowmellow.justexample.R;
-import com.flowmellow.justexample.activities.connectors.LocationServiceConnector;
+import com.flowmellow.justexample.activities.listeners.CancelDialogOnClickListener;
 import com.flowmellow.justexample.activities.listeners.CustomLocationListener;
+import com.flowmellow.justexample.activities.listeners.StartActivityOnClickListener;
 
 import android.util.Log;
 import android.view.View;
@@ -18,16 +21,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationListener;
 
-public class HomeActivity extends Activity implements OnClickListener, LocationListener, CustomLocationListener,
+public class HomeActivity extends Activity implements OnClickListener, CustomLocationListener,
 		GooglePlayServicesClient.ConnectionCallbacks, GooglePlayServicesClient.OnConnectionFailedListener {
 
 	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
@@ -37,15 +38,16 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 	private EditText searchEditText;
 	private ProgressBar locationProgressBar;
 
-	private LocationClient locationClient;
-	private LocationServiceConnector locationServiceConnector;
-	private LocationManager locationManager;
+	private AppController controller;
 	private boolean isLocationClientConnected = false;
+	private LocationManager locationManager;
+	private LocationClient locationClient;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
+		controller = BasicAppController.getController();
 
 		locationImageButton = (ImageButton) findViewById(R.id.locationImageButton);
 		searchImageButton = (ImageButton) findViewById(R.id.searchImageButton);
@@ -55,37 +57,32 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 		locationImageButton.setOnClickListener(this);
 		searchImageButton.setOnClickListener(this);
 
-		locationClient = getLocationClient();
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		locationServiceConnector = new LocationServiceConnector(this, this, this);
+		locationClient = new LocationClient(this, this, this);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
 
-		// connect to google play services location client
 		locationClient.connect();
 
 		// Bind to LocationService
-		locationServiceConnector.bindToService();
+		controller.locationServiceConnection(locationClient);
+
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-
 		if (locationClient.isConnected()) {
-
-			// remove any location updates
-			locationClient.removeLocationUpdates(this);
 
 			// disconnect to google play services location client
 			locationClient.disconnect();
 		}
 
 		// Unbind from LocationService
-		locationServiceConnector.unbindFromService();
+		controller.locationServiceDisconnection();
 	}
 
 	@Override
@@ -120,7 +117,7 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 			case Activity.RESULT_OK:
 
 				if (!isLocationClientConnected) {
-					locationClient.connect();
+					controller.locationServiceConnection(locationClient);
 				}
 				break;
 			}
@@ -154,24 +151,6 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 	}
 
 	/**
-	 * The location must call through to {@code displayPostcode} even if the
-	 * postcode is not found so that the {@code locationProgressBar} is handled
-	 * correctly
-	 */
-	@Override
-	public void onLocationChanged(Location location) {
-
-		String postcode = null;
-
-		if (location != null) {
-			postcode = locationServiceConnector.getPostCode(location);
-		}
-
-		displayPostcode(postcode);
-		locationClient.removeLocationUpdates(this);
-	}
-
-	/**
 	 * Display postcode requested in {@code searchEditText}, hide spinner.
 	 */
 	@Override
@@ -199,7 +178,7 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 		}
 
 		locationProgressBar.setVisibility(View.VISIBLE);
-		locationServiceConnector.requestPostcodeByLocation(locationClient);
+		controller.requestPostcode(this);
 	}
 
 	/**
@@ -210,10 +189,10 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 
 		// short circuit if locationManager is not connected
 		if (isNetworkProviderDisabled()) {
-			showNoLocationWarningDialog();
+			showNoNetworkWarningDialog();
 			return;
 		}
-		
+
 		String postcode = searchEditText.getText().toString();
 
 		if (postcode != null && !postcode.isEmpty()) {
@@ -237,21 +216,9 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 
 	protected void showNoLocationWarningDialog() {
 
-		final DialogInterface.OnClickListener loadSettings = new DialogInterface.OnClickListener() {
-
-			@Override
-			public void onClick(final DialogInterface dialog, final int id) {
-				startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-			}
-		};
-
-		final DialogInterface.OnClickListener cancelDialog = new DialogInterface.OnClickListener() {
-
-			@Override
-			public void onClick(final DialogInterface dialog, final int id) {
-				dialog.cancel();
-			}
-		};
+		final DialogInterface.OnClickListener loadSettings = new StartActivityOnClickListener(this,
+				android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+		final DialogInterface.OnClickListener cancelDialog = new CancelDialogOnClickListener();
 
 		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setCancelable(false).setTitle(getString(R.string.helper_location_disabled_title))
@@ -263,13 +230,20 @@ public class HomeActivity extends Activity implements OnClickListener, LocationL
 		alert.show();
 	}
 
-	/**
-	 * Get the location client, could be exposed to package private for testing.
-	 * 
-	 * @return {@code LocationClient}
-	 */
-	private LocationClient getLocationClient() {
-		return new LocationClient(this, this, this);
+	protected void showNoNetworkWarningDialog() {
+
+		final DialogInterface.OnClickListener loadSettings = new StartActivityOnClickListener(this,
+				android.provider.Settings.ACTION_NETWORK_OPERATOR_SETTINGS);
+		final DialogInterface.OnClickListener cancelDialog = new CancelDialogOnClickListener();
+
+		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false).setTitle(getString(R.string.helper_network_disabled_title))
+				.setMessage(getString(R.string.helper_network_disabled_message))
+				.setPositiveButton(getString(R.string.helper_network_disabled_settings), loadSettings)
+				.setNegativeButton(getString(R.string.helper_network_disabled_cancel), cancelDialog);
+
+		final AlertDialog alert = builder.create();
+		alert.show();
 	}
 
 	/**

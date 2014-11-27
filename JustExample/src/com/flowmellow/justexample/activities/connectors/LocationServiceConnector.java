@@ -1,31 +1,29 @@
 package com.flowmellow.justexample.activities.connectors;
 
-import com.flowmellow.justexample.activities.listeners.CustomLocationListener;
-import com.flowmellow.justexample.services.BasicLocationService;
-import com.flowmellow.justexample.services.BasicLocationService.LocationBinder;
-import com.flowmellow.justexample.services.LocationService;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationListener;
-
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.location.Location;
 import android.os.IBinder;
+import android.util.Log;
+
+import com.flowmellow.justexample.activities.listeners.BasicLocationListener;
+import com.flowmellow.justexample.activities.listeners.CustomLocationListener;
+import com.flowmellow.justexample.services.BasicLocationService;
+import com.flowmellow.justexample.services.BasicLocationService.LocationBinder;
+import com.flowmellow.justexample.services.LocationService;
+import com.google.android.gms.location.LocationClient;
 
 public class LocationServiceConnector implements ServiceConnection {
 
 	private Context context;
+	private LocationClient locationClient;
 	private LocationService locationService;
-	private boolean isServiceBound;
-	private LocationListener locationListener;
-	private CustomLocationListener customLocationListener;
+	private boolean isServiceBound = false;
 
-	public LocationServiceConnector(Context context, LocationListener locationListener, CustomLocationListener customLocationListener) {
+	public LocationServiceConnector(Context context) {
 		this.context = context;
-		this.locationListener = locationListener;
-		this.customLocationListener = customLocationListener;
 	}
 
 	@Override
@@ -40,7 +38,8 @@ public class LocationServiceConnector implements ServiceConnection {
 		isServiceBound = false;
 	}
 
-	public void bindToService() {
+	public void bindToService(LocationClient locationClient) {
+		this.locationClient = locationClient;
 		Intent intent = new Intent(context, BasicLocationService.class);
 		context.bindService(intent, this, Context.BIND_AUTO_CREATE);
 	}
@@ -48,6 +47,8 @@ public class LocationServiceConnector implements ServiceConnection {
 	public void unbindFromService() {
 		if (isServiceBound) {
 			context.unbindService(this);
+		} else {
+			Log.w(com.flowmellow.justexample.Config.LOG_TAG, "Attempting to unbind but service was never bound");
 		}
 	}
 
@@ -60,9 +61,12 @@ public class LocationServiceConnector implements ServiceConnection {
 		return postcode;
 	}
 
-	public void requestPostcodeByLocation(LocationClient locationClient) {
+	public void requestPostcodeByLocation(CustomLocationListener customLocationListener) {
 		if (isServiceBound) {
-			locationService.requestPostcodeByLocation(context, locationListener, customLocationListener, locationClient);
+			final BasicLocationListener basicLocationListener = new BasicLocationListener(customLocationListener, locationClient, this);
+			locationService.requestPostcodeByLocation(context, locationClient, customLocationListener, basicLocationListener);
+		} else {
+			Log.e(com.flowmellow.justexample.Config.LOG_TAG, "Service not bound");
 		}
 	}
 }

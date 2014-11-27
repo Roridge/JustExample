@@ -8,10 +8,9 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 
 public interface LocationService {
-	
-	public void requestPostcodeByLocation(final Context context, final LocationListener locationListener,
-			final CustomLocationListener customLoctionListener, final LocationClient locationClient);
+
+	public void requestPostcodeByLocation(Context context, LocationClient locationClient, CustomLocationListener customLoctionListener,
+			LocationListener locationListener);
 
 	public String getPostCode(final Context context, final Location location);
-	
 }

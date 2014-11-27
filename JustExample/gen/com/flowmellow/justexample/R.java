@@ -2335,7 +2335,7 @@ containing a value of this type.
         public static final int decline=0x7f060003;
         /**  Error messages 
          */
-        public static final int error_postcode_not_found=0x7f06003b;
+        public static final int error_postcode_not_found=0x7f06003f;
         public static final int helper_location_disabled_cancel=0x7f06003a;
         public static final int helper_location_disabled_message=0x7f060037;
         public static final int helper_location_disabled_settings=0x7f060039;
@@ -2343,15 +2343,19 @@ containing a value of this type.
         /**  Helper messages 
          */
         public static final int helper_missing_postcode=0x7f060036;
-        public static final int location_button_description=0x7f06003d;
+        public static final int helper_network_disabled_cancel=0x7f06003e;
+        public static final int helper_network_disabled_message=0x7f06003b;
+        public static final int helper_network_disabled_settings=0x7f06003d;
+        public static final int helper_network_disabled_title=0x7f06003c;
+        public static final int location_button_description=0x7f060041;
         /**  UI View Strigns 
          */
         public static final int location_button_text=0x7f060033;
         public static final int number_of_ratings_format=0x7f060035;
         /**  UI Descriptions 
          */
-        public static final int restaurant_logo_description=0x7f06003c;
-        public static final int search_button_description=0x7f06003e;
+        public static final int restaurant_logo_description=0x7f060040;
+        public static final int search_button_description=0x7f060042;
         public static final int search_button_text=0x7f060034;
         public static final int store_picture_message=0x7f060001;
         public static final int store_picture_title=0x7f060000;

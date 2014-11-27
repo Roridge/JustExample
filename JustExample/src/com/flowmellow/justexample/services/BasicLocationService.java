@@ -45,9 +45,11 @@ public class BasicLocationService extends Service implements LocationService {
 	 *            context used to run on the UI thread
 	 * @param customLoctionListener
 	 *            callback invoked to return postcode to activity
+	 * @param locationListener
 	 */
-	public void requestPostcodeByLocation(final Context context, final LocationListener locationListener,
-			final CustomLocationListener customLoctionListener, final LocationClient locationClient) {
+	@Override
+	public void requestPostcodeByLocation(final Context context, final LocationClient locationClient,
+			final CustomLocationListener customLoctionListener, LocationListener locationListener) {
 
 		// short circuit if locationClient is not connected
 		if (!locationClient.isConnected()) {
