@@ -1,9 +1,5 @@
 package com.flowmellow.justexample.activities;
 
-import java.util.List;
-
-import android.app.ActivityManager;
-import android.content.Context;
 import android.test.InstrumentationTestCase;
 import android.view.View;
 import android.widget.EditText;
