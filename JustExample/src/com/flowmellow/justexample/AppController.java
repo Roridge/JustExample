@@ -8,13 +8,11 @@ public interface AppController {
 
 	public void requestPostcode(CustomLocationListener customLocationListener);
 
-	public void requestRestaurant(String postcode);
-	
 	public void locationServiceConnection(LocationClient locationClient);
 	
 	public void locationServiceDisconnection();
 	
-	public void restaurantServiceConnection(RestaurantListener restaurantListener);
+	public void restaurantServiceConnection(final RestaurantListener restaurantListener, final String postcode);
 	
 	public void restaurantServiceDisconnection();
 	

@@ -42,10 +42,9 @@ public class RestaurantsActivity extends Activity implements RestaurantListener 
 		super.onStart();
 
 		// Bind to RestaurantService
-		controller.restaurantServiceConnection(this);
-
-		startRequest();
+		connectAndDataRequest();
 	}
+
 
 	@Override
 	protected void onStop() {
@@ -55,7 +54,7 @@ public class RestaurantsActivity extends Activity implements RestaurantListener 
 		controller.restaurantServiceDisconnection();
 	}
 
-	private void startRequest() {
+	private void connectAndDataRequest() {
 
 		final Intent intent = getIntent();
 
@@ -64,7 +63,7 @@ public class RestaurantsActivity extends Activity implements RestaurantListener 
 		}
 
 		if (postcode != null) {
-			controller.requestRestaurant(postcode);
+			controller.restaurantServiceConnection(this, postcode);
 		} else {
 			noRestaurantsFound();
 		}
@@ -72,10 +71,19 @@ public class RestaurantsActivity extends Activity implements RestaurantListener 
 
 	protected void noRestaurantsFound() {
 		restaurantProgressBar.setVisibility(View.GONE);
+		// TODO
 	}
 
 	@Override
 	public void displayRestaurants(List<RestaurantTO> restaurants) {
+		
+		// short circuit if no restaurants found
+		if(restaurants == null || restaurants.isEmpty()) {
+			noRestaurantsFound();
+			return;
+		}
+		
+		//order by rating
 		Collections.sort(restaurants);
 		restaurantProgressBar.setVisibility(View.GONE);
 		adapter = new LazyRestaurantAdapter(this, restaurants);

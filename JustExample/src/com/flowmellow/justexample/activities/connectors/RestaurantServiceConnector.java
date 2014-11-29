@@ -16,6 +16,7 @@ public class RestaurantServiceConnector implements ServiceConnection {
 	private RestaurantService restaurantService;
 	private boolean isServiceBound;
 	private RestaurantListener restaurantListener;
+	private String postCode;
 
 	public RestaurantServiceConnector(Context context) {
 		this.context = context;
@@ -26,6 +27,7 @@ public class RestaurantServiceConnector implements ServiceConnection {
 		RestaurantBinder binder = (RestaurantBinder) service;
 		restaurantService = binder.getService();
 		isServiceBound = true;
+		requestRestaurant(postCode);
 	}
 
 	@Override
@@ -33,8 +35,9 @@ public class RestaurantServiceConnector implements ServiceConnection {
 		isServiceBound = false;
 	}
 
-	public void bindToService(final RestaurantListener restaurantListener) {
+	public void bindToService(final RestaurantListener restaurantListener, final String postCode) {
 		this.restaurantListener = restaurantListener;
+		this.postCode = postCode;
 		Intent intent = new Intent(context, BasicRestaurantService.class);
 		context.bindService(intent, this, Context.BIND_AUTO_CREATE);
 	}

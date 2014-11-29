@@ -3,7 +3,6 @@ package com.flowmellow.justexample.activities;
 import android.app.Dialog;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
-import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.util.Log;
@@ -17,14 +16,14 @@ import com.flowmellow.justexample.R;
 import com.flowmellow.justexample.TestUtil;
 import com.flowmellow.justexample.LocationUtil;
 
-public class HomeActivityTest extends ActivityInstrumentationTestCase2<HomeActivity> {
+public class HomeActivityTest extends AbstractActivityInstrumentationTestCase2<HomeActivity> {
 
 	private static final long TIMEOUT = 1000l;
-	
+
 	private HomeActivity activity;
 	private Context context;
 	private MockAppController mockAppController;
-	
+
 	private EditText searchEditText;
 	private ImageButton locationImageButton;
 	private ImageButton searchImageButton;
@@ -40,7 +39,8 @@ public class HomeActivityTest extends ActivityInstrumentationTestCase2<HomeActiv
 		activity = getActivity();
 		context = getInstrumentation().getContext();
 		mockAppController = TestUtil.setupMockAppController(activity, context);
-		onCreate();// recreate because we want the MockAppController to be picked up
+		//we want to ensure the MockAppController is picked up
+		onCreate();
 		searchEditText = (EditText) activity.findViewById(R.id.searchEditText);
 		locationImageButton = (ImageButton) activity.findViewById(R.id.locationImageButton);
 		searchImageButton = (ImageButton) activity.findViewById(R.id.searchImageButton);
@@ -117,19 +117,21 @@ public class HomeActivityTest extends ActivityInstrumentationTestCase2<HomeActiv
 		final ActivityMonitor activityMonitor = getInstrumentation().addMonitor(RestaurantsActivity.class.getName(), null, false);
 		ActivityUtil.setText(this, searchEditText, LocationUtil.POSTCODE);
 		ActivityUtil.clickView(this, searchImageButton);
-		final RestaurantsActivity restaurantsActivity = (RestaurantsActivity) getInstrumentation().waitForMonitorWithTimeout(activityMonitor, TIMEOUT);
+		final RestaurantsActivity restaurantsActivity = (RestaurantsActivity) getInstrumentation().waitForMonitorWithTimeout(
+				activityMonitor, TIMEOUT);
 
 		// restaurantsActivity is opened and captured.
 		final String errorMessage = "The RestaurantsActivity was not started or took longer than %d milliseconds to start and was timed out";
 		assertNotNull(String.format(errorMessage, TIMEOUT), restaurantsActivity);
 		restaurantsActivity.finish();
 	}
-	
+
 	@LargeTest
 	public void testRestuarantActivityIsNotStartedOnSearchWithoutPostcode() throws Throwable {
 		final ActivityMonitor activityMonitor = getInstrumentation().addMonitor(RestaurantsActivity.class.getName(), null, false);
 		ActivityUtil.clickView(this, searchImageButton);
-		final RestaurantsActivity restaurantsActivity = (RestaurantsActivity) getInstrumentation().waitForMonitorWithTimeout(activityMonitor, TIMEOUT);
+		final RestaurantsActivity restaurantsActivity = (RestaurantsActivity) getInstrumentation().waitForMonitorWithTimeout(
+				activityMonitor, TIMEOUT);
 
 		final String errorMessage = "The RestaurantsActivity was started with no postcode entered";
 		assertNull(errorMessage, restaurantsActivity);
@@ -145,7 +147,8 @@ public class HomeActivityTest extends ActivityInstrumentationTestCase2<HomeActiv
 				}
 			});
 		} catch (Throwable e) {
-			Log.e(com.flowmellow.justexample.Config.LOG_TAG, "couldn't recreate activity");
+			Log.e(com.flowmellow.justexample.Config.LOG_TAG, "couldn't call activiy onCreate");
 		}
 	}
+
 }

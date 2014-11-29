@@ -27,11 +27,6 @@ public class BasicAppController implements AppController {
 	}
 
 	@Override
-	public void requestRestaurant(String postcode) {
-		restaurantServiceConnector.requestRestaurant(postcode);
-	}
-
-	@Override
 	public void locationServiceConnection(LocationClient locationClient) {
 		locationServiceConnector.bindToService(locationClient);
 	}
@@ -42,8 +37,8 @@ public class BasicAppController implements AppController {
 	}
 
 	@Override
-	public void restaurantServiceConnection(final RestaurantListener restaurantListener) {
-		restaurantServiceConnector.bindToService(restaurantListener);
+	public void restaurantServiceConnection(final RestaurantListener restaurantListener, final String postcode) {
+		restaurantServiceConnector.bindToService(restaurantListener, postcode);
 	}
 
 	@Override

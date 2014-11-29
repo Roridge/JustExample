@@ -11,7 +11,7 @@ public class MockAppController extends BasicAppController {
 
 	private boolean isGPSProviderDisabled = false;
 	private boolean isNetworkProviderDisabled = false;
-	
+
 	public MockAppController(Context context) {
 		super(context);
 	}
@@ -21,11 +21,6 @@ public class MockAppController extends BasicAppController {
 		Log.i(Config.LOG_TAG, "requestPostcode");
 		// return postcode mocking a successful response
 		customLocationListener.displayPostcode(LocationUtil.POSTCODE);
-	}
-
-	@Override
-	public void requestRestaurant(String postcode) {
-		Log.i(Config.LOG_TAG, "requestRestaurant");
 	}
 
 	@Override
@@ -39,8 +34,12 @@ public class MockAppController extends BasicAppController {
 	}
 
 	@Override
-	public void restaurantServiceConnection(RestaurantListener restaurantListener) {
+	public void restaurantServiceConnection(RestaurantListener restaurantListener, String postcode) {
 		Log.i(Config.LOG_TAG, "restaurantServiceConnection");
+
+		if (postcode.equals(LocationUtil.POSTCODE)) {
+			restaurantListener.displayRestaurants(RestaurantUtil.getMockRestaurants());
+		}
 	}
 
 	@Override
@@ -52,7 +51,7 @@ public class MockAppController extends BasicAppController {
 	public boolean isGPSProviderDisabled() {
 		return isGPSProviderDisabled;
 	}
-	
+
 	@Override
 	public boolean isNetworkProviderDisabled() {
 		return isNetworkProviderDisabled;
@@ -65,8 +64,5 @@ public class MockAppController extends BasicAppController {
 	public void setNetworkProviderDisabled(boolean isNetworkProviderDisabled) {
 		this.isNetworkProviderDisabled = isNetworkProviderDisabled;
 	}
-	
-	
-	
-	
+
 }

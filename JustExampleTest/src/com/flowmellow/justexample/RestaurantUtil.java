@@ -7,7 +7,6 @@ import com.flowmellow.justexample.activities.to.RestaurantTO;
 
 public class RestaurantUtil {
 
-	public static final String POSTCODE = "WD6 1JN";
 	public static final String ONLINE_URL = "http://cdn.sstatic.net/stackexchange/img/logos/so/so-icon.png";
 
 	public static List<RestaurantTO> getMockRestaurants() {

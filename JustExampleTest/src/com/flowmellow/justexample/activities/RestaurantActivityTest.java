@@ -2,63 +2,77 @@ package com.flowmellow.justexample.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.test.ActivityInstrumentationTestCase2;
-import android.test.UiThreadTest;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.test.suitebuilder.annotation.SmallTest;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import com.flowmellow.justexample.LocationUtil;
+import com.flowmellow.justexample.MockAppController;
 import com.flowmellow.justexample.R;
-import com.flowmellow.justexample.RestaurantUtil;
+import com.flowmellow.justexample.TestUtil;
 import com.flowmellow.justexample.activities.to.RestaurantTO;
 
-public class RestaurantActivityTest extends ActivityInstrumentationTestCase2<RestaurantsActivity> {
+public class RestaurantActivityTest extends AbstractActivityInstrumentationTestCase2<RestaurantsActivity> {
 
 	private RestaurantsActivity activity;
 	private Context context;
+	
+	private ProgressBar restaurantProgressBar;
+	private ListView restaurantList;
+	private MockAppController mockAppController;
 
 	public RestaurantActivityTest() {
 		super(RestaurantsActivity.class);
 	}
 
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-
+	private void setupWithPostcode() {
+		context = getInstrumentation().getTargetContext();
+		final Intent intent = new Intent(context, RestaurantsActivity.class);
+		intent.putExtra(RestaurantsActivity.POSTCODE_INTENT, LocationUtil.POSTCODE);
+		setActivityIntent(intent);
+		setup();
 	}
-	
+
+	private void setup() {
+		activity = getActivity();
+		context = getInstrumentation().getContext();
+		mockAppController = TestUtil.setupMockAppController(activity, context);
+		//we want to ensure the MockAppController is picked up
+		onCreate();
+		//requests the restaurant data
+		onStart();
+		restaurantList = (ListView) activity.findViewById(R.id.restaurantList);
+		restaurantProgressBar = (ProgressBar) activity.findViewById(R.id.restaurantProgressBar);
+	}
+
 	@Override
 	protected void tearDown() throws Exception {
 		super.tearDown();
-	}
-	
-
-	@SmallTest
-	@UiThreadTest
-	public void testLocationProgressBarIsGone() {
-		setupWithoutPostcode();
-		final ProgressBar restaurantProgressBar = (ProgressBar) activity.findViewById(R.id.restaurantProgressBar);
-		final int restaurantProgressBarVisability = restaurantProgressBar.getVisibility();
-		final String errorMessage = "restaurant progress bar should not be visible if no postcode was passed in";
-		assertEquals(errorMessage, View.GONE, restaurantProgressBarVisability);
 	}
 
 	@SmallTest
 	public void testRestaurantListIsVisible() throws Throwable {
 		setupWithPostcode();
-		displayMockRestaurants();
-		final ListView restaurantList = (ListView) activity.findViewById(R.id.restaurantList);
 		final int restaurantListVisability = restaurantList.getVisibility();
 		final String errorMessage = "restaurant list view should be visible";
 		assertEquals(errorMessage, View.VISIBLE, restaurantListVisability);
 	}
 
+	@SmallTest
+	public void testLocationProgressBarIsGone() {
+		setup();
+		final int restaurantProgressBarVisability = restaurantProgressBar.getVisibility();
+		final String errorMessage = "restaurant progress bar should not be visible if no postcode was passed in";
+		assertEquals(errorMessage, View.GONE, restaurantProgressBarVisability);
+	}
+
 	@LargeTest
 	public void testRestaurantListDisplayItemsInRatingOrder() throws Throwable {
 		setupWithPostcode();
-		displayMockRestaurants();
+		
 		final ListView restaurantList = (ListView) activity.findViewById(R.id.restaurantList);
 		
 		final StringBuilder errorMessage = new StringBuilder();
@@ -79,28 +93,35 @@ public class RestaurantActivityTest extends ActivityInstrumentationTestCase2<Res
 		}
 		
 	}
+	
 
-	private void displayMockRestaurants() throws Throwable {
-		runTestOnUiThread(new Runnable() {
+	private void onCreate() {
+		try {
+			runTestOnUiThread(new Runnable() {
 
-			@Override
-			public void run() {
-				activity.displayRestaurants(RestaurantUtil.getMockRestaurants());
-			}
-		});
+				@Override
+				public void run() {
+					activity.onCreate(null);
+				}
+			});
+		} catch (Throwable e) {
+			Log.e(com.flowmellow.justexample.Config.LOG_TAG, "couldn't call activiy onCreate");
+		}
 	}
+	
 
-	private void setupWithPostcode() {
-		context = getInstrumentation().getTargetContext();
-		final Intent intent = new Intent(context, RestaurantsActivity.class);
-		intent.putExtra(RestaurantsActivity.POSTCODE_INTENT, RestaurantUtil.POSTCODE);
-		setActivityIntent(intent);
-		activity = getActivity();
+	private void onStart() {
+		try {
+			runTestOnUiThread(new Runnable() {
 
-	}
-
-	private void setupWithoutPostcode() {
-		activity = getActivity();
+				@Override
+				public void run() {
+					activity.onStart();
+				}
+			});
+		} catch (Throwable e) {
+			Log.e(com.flowmellow.justexample.Config.LOG_TAG, "couldn't call activiy onStart");
+		}
 	}
 
 }
