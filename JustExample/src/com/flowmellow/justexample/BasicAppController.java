@@ -1,40 +1,71 @@
 package com.flowmellow.justexample;
 
 import com.flowmellow.justexample.activities.connectors.LocationServiceConnector;
+import com.flowmellow.justexample.activities.connectors.RestaurantServiceConnector;
 import com.flowmellow.justexample.activities.listeners.CustomLocationListener;
+import com.flowmellow.justexample.activities.listeners.RestaurantListener;
 import com.google.android.gms.location.LocationClient;
 
 import android.content.Context;
-import android.util.Log;
+import android.location.LocationManager;
 
 public class BasicAppController implements AppController {
 
-	private static BasicAppController controller = null;
-	private static LocationServiceConnector locationServiceConnector;
+	private LocationServiceConnector locationServiceConnector;
+	private RestaurantServiceConnector restaurantServiceConnector;
+	private LocationManager locationManager;
 
-			
-	static void boot(Context context){
-		if(controller == null) {
-			controller = new BasicAppController();
-			locationServiceConnector = new LocationServiceConnector(context);
-		} else {
-			Log.e(Config.LOG_TAG, "AppController should only be constructed once.");
-		}
+	BasicAppController(Context context) {
+		locationServiceConnector = new LocationServiceConnector(context);
+		restaurantServiceConnector = new RestaurantServiceConnector(context);
+		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 	}
 
-	public static AppController getController() {
-		return controller;
-	}
-
+	@Override
 	public void requestPostcode(CustomLocationListener customLocationListener) {
 		locationServiceConnector.requestPostcodeByLocation(customLocationListener);
 	}
-	
+
+	@Override
+	public void requestRestaurant(String postcode) {
+		restaurantServiceConnector.requestRestaurant(postcode);
+	}
+
+	@Override
 	public void locationServiceConnection(LocationClient locationClient) {
 		locationServiceConnector.bindToService(locationClient);
 	}
-	
+
+	@Override
 	public void locationServiceDisconnection() {
 		locationServiceConnector.unbindFromService();
+	}
+
+	@Override
+	public void restaurantServiceConnection(final RestaurantListener restaurantListener) {
+		restaurantServiceConnector.bindToService(restaurantListener);
+	}
+
+	@Override
+	public void restaurantServiceDisconnection() {
+		restaurantServiceConnector.unbindFromService();
+	}
+
+	/**
+	 * Check if gps provider is Disabled
+	 * 
+	 * @return {@code true} if disabled, {@code false} if enabled.
+	 */
+	public boolean isGPSProviderDisabled() {
+		return !locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+	}
+
+	/**
+	 * Check if network provider is Disabled
+	 * 
+	 * @return {@code true} if disabled, {@code false} if enabled.
+	 */
+	public boolean isNetworkProviderDisabled() {
+		return !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 	}
 }

@@ -1,25 +1,34 @@
 package com.flowmellow.justexample.activities;
 
-import com.flowmellow.justexample.R;
-import com.flowmellow.justexample.activities.HomeActivity;
-
-import android.app.Application;
+import android.app.Dialog;
 import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.UiThreadTest;
 import android.test.suitebuilder.annotation.LargeTest;
-import android.test.suitebuilder.annotation.MediumTest;
 import android.test.suitebuilder.annotation.SmallTest;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
-public class HomeActivityTest extends
-		ActivityInstrumentationTestCase2<HomeActivity> {
+import com.flowmellow.justexample.MockAppController;
+import com.flowmellow.justexample.R;
+import com.flowmellow.justexample.TestUtil;
+import com.flowmellow.justexample.LocationUtil;
 
+public class HomeActivityTest extends ActivityInstrumentationTestCase2<HomeActivity> {
+
+	private static final long TIMEOUT = 1000l;
+	
 	private HomeActivity activity;
+	private Context context;
+	private MockAppController mockAppController;
+	
+	private EditText searchEditText;
+	private ImageButton locationImageButton;
+	private ImageButton searchImageButton;
+	private ProgressBar locationProgressBar;
 
 	public HomeActivityTest() {
 		super(HomeActivity.class);
@@ -29,6 +38,13 @@ public class HomeActivityTest extends
 	protected void setUp() throws Exception {
 		super.setUp();
 		activity = getActivity();
+		context = getInstrumentation().getContext();
+		mockAppController = TestUtil.setupMockAppController(activity, context);
+		onCreate();// recreate because we want the MockAppController to be picked up
+		searchEditText = (EditText) activity.findViewById(R.id.searchEditText);
+		locationImageButton = (ImageButton) activity.findViewById(R.id.locationImageButton);
+		searchImageButton = (ImageButton) activity.findViewById(R.id.searchImageButton);
+		locationProgressBar = (ProgressBar) activity.findViewById(R.id.locationProgressBar);
 	}
 
 	@Override
@@ -38,8 +54,6 @@ public class HomeActivityTest extends
 
 	@SmallTest
 	public void testSearchEditTextViewIsVisible() {
-		final EditText searchEditText = (EditText) activity
-				.findViewById(R.id.searchEditText);
 		final int searchEditTextVisability = searchEditText.getVisibility();
 		final String errorMessage = "search edit text view was not visible";
 		assertEquals(errorMessage, View.VISIBLE, searchEditTextVisability);
@@ -47,75 +61,91 @@ public class HomeActivityTest extends
 
 	@SmallTest
 	public void testLocationImageButtonIsVisible() {
-		final ImageButton locationImageButton = (ImageButton) activity
-				.findViewById(R.id.locationImageButton);
-		final int locationImageButtonVisability = locationImageButton
-				.getVisibility();
+		final int locationImageButtonVisability = locationImageButton.getVisibility();
 		final String errorMessage = "location image button was not visible";
 		assertEquals(errorMessage, View.VISIBLE, locationImageButtonVisability);
 	}
 
 	@SmallTest
 	public void testSearchImageButtonIsVisible() {
-		final ImageButton searchImageButton = (ImageButton) activity
-				.findViewById(R.id.searchImageButton);
-		final int searchImageButtonVisability = searchImageButton
-				.getVisibility();
+		final int searchImageButtonVisability = searchImageButton.getVisibility();
 		final String errorMessage = "search image button was not visible";
 		assertEquals(errorMessage, View.VISIBLE, searchImageButtonVisability);
 	}
 
 	@SmallTest
 	public void testLocationProgressBarIsGone() {
-		final ProgressBar locationProgressBar = (ProgressBar) activity
-				.findViewById(R.id.locationProgressBar);
-		final int locationProgressBarVisability = locationProgressBar
-				.getVisibility();
+		final int locationProgressBarVisability = locationProgressBar.getVisibility();
 		final String errorMessage = "location progress bar should be hidden on creation";
 		assertEquals(errorMessage, View.GONE, locationProgressBarVisability);
 	}
 
 	@SmallTest
-	@UiThreadTest
-	public void testPostCodeCallbackDisplaysPostcode() {
-		final EditText searchEditText = (EditText) activity
-				.findViewById(R.id.searchEditText);
-		final String postcode = "WD6 1JN";
-		activity.displayPostcode(postcode);
+	public void testPostCodeCallbackDisplaysPostcode() throws Throwable {
+		ActivityUtil.setText(this, searchEditText, LocationUtil.POSTCODE);
 		final String actualText = searchEditText.getText().toString();
 		final String errorMessage = "The text displayed didn't match what was sent to be displayed";
-		assertEquals(errorMessage, postcode, actualText);
+		assertEquals(errorMessage, LocationUtil.POSTCODE, actualText);
+	}
+
+	@SmallTest
+	public void testLocationIsDisplayedOnRequest() throws Throwable {
+		ActivityUtil.clickView(this, locationImageButton);
+		final String actual = searchEditText.getText().toString();
+		final String errorMessage = "The text was not displayed on request";
+		assertEquals(errorMessage, LocationUtil.POSTCODE, actual);
+	}
+
+	@SmallTest
+	public void testDialogIsShownWhenThereIsNoNetworkService() throws Throwable {
+		mockAppController.setNetworkProviderDisabled(true);
+		ActivityUtil.clickView(this, searchImageButton);
+		final Dialog dialog = activity.getNoNetworkWarningDialog();
+		assertTrue("The dialog is not visible", dialog.isShowing());
+	}
+
+	@SmallTest
+	public void testDialogIsShownWhenThereIsNoLocationService() throws Throwable {
+		mockAppController.setGPSProviderDisabled(true);
+		ActivityUtil.clickView(this, locationImageButton);
+		final Dialog dialog = activity.getNoLocationWarningDialog();
+		assertTrue("The dialog is not visible", dialog.isShowing());
 	}
 
 	@LargeTest
-	public void test() throws Throwable {
-		
-		Application i = (Application) getInstrumentation().getTargetContext().getApplicationContext();
-		
-		final ActivityMonitor activityMonitor = getInstrumentation().addMonitor(
-				RestaurantsActivity.class.getName(), null, false);
+	public void testRestuarantActivityIsStartedOnSearchWithPostCode() throws Throwable {
+		final ActivityMonitor activityMonitor = getInstrumentation().addMonitor(RestaurantsActivity.class.getName(), null, false);
+		ActivityUtil.setText(this, searchEditText, LocationUtil.POSTCODE);
+		ActivityUtil.clickView(this, searchImageButton);
+		final RestaurantsActivity restaurantsActivity = (RestaurantsActivity) getInstrumentation().waitForMonitorWithTimeout(activityMonitor, TIMEOUT);
 
-		final String postcode = "WD6 1JN";
-		final EditText searchEditText = (EditText) activity
-				.findViewById(R.id.searchEditText);
-		final ImageButton searchImageButton = (ImageButton) activity
-				.findViewById(R.id.searchImageButton);
+		// restaurantsActivity is opened and captured.
+		final String errorMessage = "The RestaurantsActivity was not started or took longer than %d milliseconds to start and was timed out";
+		assertNotNull(String.format(errorMessage, TIMEOUT), restaurantsActivity);
+		restaurantsActivity.finish();
+	}
+	
+	@LargeTest
+	public void testRestuarantActivityIsNotStartedOnSearchWithoutPostcode() throws Throwable {
+		final ActivityMonitor activityMonitor = getInstrumentation().addMonitor(RestaurantsActivity.class.getName(), null, false);
+		ActivityUtil.clickView(this, searchImageButton);
+		final RestaurantsActivity restaurantsActivity = (RestaurantsActivity) getInstrumentation().waitForMonitorWithTimeout(activityMonitor, TIMEOUT);
 
-		runTestOnUiThread(new Runnable() {
+		final String errorMessage = "The RestaurantsActivity was started with no postcode entered";
+		assertNull(errorMessage, restaurantsActivity);
+	}
 
-			@Override
-			public void run() {
-				searchEditText.setText(postcode);
-				searchImageButton.performClick();
+	private void onCreate() {
+		try {
+			runTestOnUiThread(new Runnable() {
 
-			}
-		});
-
-		RestaurantsActivity nextActivity = (RestaurantsActivity) getInstrumentation()
-				.waitForMonitorWithTimeout(activityMonitor, 5);
-		// next activity is opened and captured.
-		assertNotNull(nextActivity);
-		nextActivity.finish();
-
+				@Override
+				public void run() {
+					activity.onCreate(null);
+				}
+			});
+		} catch (Throwable e) {
+			Log.e(com.flowmellow.justexample.Config.LOG_TAG, "couldn't recreate activity");
+		}
 	}
 }

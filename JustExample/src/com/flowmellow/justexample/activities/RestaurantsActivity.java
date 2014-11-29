@@ -10,9 +10,10 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import com.flowmellow.justexample.AppController;
+import com.flowmellow.justexample.DefaultApplication;
 import com.flowmellow.justexample.R;
 import com.flowmellow.justexample.activities.adapters.LazyRestaurantAdapter;
-import com.flowmellow.justexample.activities.connectors.RestaurantServiceConnector;
 import com.flowmellow.justexample.activities.listeners.RestaurantListener;
 import com.flowmellow.justexample.activities.to.RestaurantTO;
 
@@ -23,18 +24,17 @@ public class RestaurantsActivity extends Activity implements RestaurantListener 
 	private ListView restaurantList;
 	private ProgressBar restaurantProgressBar;
 	private LazyRestaurantAdapter adapter;
-	private RestaurantServiceConnector restaurantServiceConnector;
 	private String postcode;
+	private AppController controller;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_restaurants_list);
+		controller = ((DefaultApplication) this.getApplication()).getController();
 
 		restaurantList = (ListView) findViewById(R.id.restaurantList);
 		restaurantProgressBar = (ProgressBar) findViewById(R.id.restaurantProgressBar);
-
-		restaurantServiceConnector = new RestaurantServiceConnector(this, this);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class RestaurantsActivity extends Activity implements RestaurantListener 
 		super.onStart();
 
 		// Bind to RestaurantService
-		restaurantServiceConnector.bindToService();
+		controller.restaurantServiceConnection(this);
 
 		startRequest();
 	}
@@ -52,7 +52,7 @@ public class RestaurantsActivity extends Activity implements RestaurantListener 
 		super.onStop();
 
 		// Unbind from RestaurantService
-		restaurantServiceConnector.unbindFromService();
+		controller.restaurantServiceDisconnection();
 	}
 
 	private void startRequest() {
@@ -64,7 +64,7 @@ public class RestaurantsActivity extends Activity implements RestaurantListener 
 		}
 
 		if (postcode != null) {
-			restaurantServiceConnector.requestRestaurant(postcode);
+			controller.requestRestaurant(postcode);
 		} else {
 			noRestaurantsFound();
 		}

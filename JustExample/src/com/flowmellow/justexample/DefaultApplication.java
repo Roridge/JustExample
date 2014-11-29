@@ -4,16 +4,23 @@ import android.app.Application;
 
 public class DefaultApplication extends Application {
 
-	
+	private AppController controller;
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		
 		bootloader();
 	}
-	
-	private void bootloader() {
-		BasicAppController.boot(this);
+
+	public AppController getController() {
+		return controller;
 	}
 
+	private void bootloader() {
+		controller = new BasicAppController(this);
+	}
+
+	void setAppController(AppController controller) {
+		this.controller = controller;
+	}
 }

@@ -1,13 +1,12 @@
 package com.flowmellow.justexample.activities;
 
-import com.flowmellow.justexample.AppController;
-import com.flowmellow.justexample.BasicAppController;
-import com.flowmellow.justexample.Config;
-import com.flowmellow.justexample.R;
-import com.flowmellow.justexample.activities.listeners.CancelDialogOnClickListener;
-import com.flowmellow.justexample.activities.listeners.CustomLocationListener;
-import com.flowmellow.justexample.activities.listeners.StartActivityOnClickListener;
-
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentSender;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,15 +14,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentSender;
-import android.location.LocationManager;
-import android.os.Bundle;
 
+import com.flowmellow.justexample.AppController;
+import com.flowmellow.justexample.Config;
+import com.flowmellow.justexample.DefaultApplication;
+import com.flowmellow.justexample.R;
+import com.flowmellow.justexample.activities.listeners.CancelDialogOnClickListener;
+import com.flowmellow.justexample.activities.listeners.CustomLocationListener;
+import com.flowmellow.justexample.activities.listeners.StartActivityOnClickListener;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
@@ -37,17 +35,18 @@ public class HomeActivity extends Activity implements OnClickListener, CustomLoc
 	private ImageButton searchImageButton;
 	private EditText searchEditText;
 	private ProgressBar locationProgressBar;
+	private AlertDialog networkWarningDialog;
+	private AlertDialog locationWarningDialog;
 
 	private AppController controller;
 	private boolean isLocationClientConnected = false;
-	private LocationManager locationManager;
 	private LocationClient locationClient;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
-		controller = BasicAppController.getController();
+		controller = ((DefaultApplication) this.getApplication()).getController();
 
 		locationImageButton = (ImageButton) findViewById(R.id.locationImageButton);
 		searchImageButton = (ImageButton) findViewById(R.id.searchImageButton);
@@ -56,8 +55,6 @@ public class HomeActivity extends Activity implements OnClickListener, CustomLoc
 
 		locationImageButton.setOnClickListener(this);
 		searchImageButton.setOnClickListener(this);
-
-		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		locationClient = new LocationClient(this, this, this);
 	}
 
@@ -69,7 +66,6 @@ public class HomeActivity extends Activity implements OnClickListener, CustomLoc
 
 		// Bind to LocationService
 		controller.locationServiceConnection(locationClient);
-
 	}
 
 	@Override
@@ -172,8 +168,9 @@ public class HomeActivity extends Activity implements OnClickListener, CustomLoc
 	public void requestPostcode() {
 
 		// short circuit if locationManager is not connected
-		if (isGPSProviderDisabled()) {
-			showNoLocationWarningDialog();
+		if (controller.isGPSProviderDisabled()) {
+			final Dialog alert = getNoLocationWarningDialog();
+			alert.show();
 			return;
 		}
 
@@ -188,8 +185,9 @@ public class HomeActivity extends Activity implements OnClickListener, CustomLoc
 	private void requestRestaurantsByLocation() {
 
 		// short circuit if locationManager is not connected
-		if (isNetworkProviderDisabled()) {
-			showNoNetworkWarningDialog();
+		if (controller.isNetworkProviderDisabled()) {
+			final Dialog alert = getNoNetworkWarningDialog();
+			alert.show();
 			return;
 		}
 
@@ -214,53 +212,42 @@ public class HomeActivity extends Activity implements OnClickListener, CustomLoc
 		}
 	}
 
-	protected void showNoLocationWarningDialog() {
+	protected AlertDialog getNoLocationWarningDialog() {
 
-		final DialogInterface.OnClickListener loadSettings = new StartActivityOnClickListener(this,
-				android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-		final DialogInterface.OnClickListener cancelDialog = new CancelDialogOnClickListener();
+		if (locationWarningDialog == null) {
 
-		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setCancelable(false).setTitle(getString(R.string.helper_location_disabled_title))
-				.setMessage(getString(R.string.helper_location_disabled_message))
-				.setPositiveButton(getString(R.string.helper_location_disabled_settings), loadSettings)
-				.setNegativeButton(getString(R.string.helper_location_disabled_cancel), cancelDialog);
+			final DialogInterface.OnClickListener loadSettings = new StartActivityOnClickListener(this,
+					android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+			final DialogInterface.OnClickListener cancelDialog = new CancelDialogOnClickListener();
 
-		final AlertDialog alert = builder.create();
-		alert.show();
+			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setCancelable(false).setTitle(getString(R.string.helper_location_disabled_title))
+					.setMessage(getString(R.string.helper_location_disabled_message))
+					.setPositiveButton(getString(R.string.helper_location_disabled_settings), loadSettings)
+					.setNegativeButton(getString(R.string.helper_location_disabled_cancel), cancelDialog);
+
+			locationWarningDialog = builder.create();
+		}
+		return locationWarningDialog;
 	}
 
-	protected void showNoNetworkWarningDialog() {
+	protected AlertDialog getNoNetworkWarningDialog() {
 
-		final DialogInterface.OnClickListener loadSettings = new StartActivityOnClickListener(this,
-				android.provider.Settings.ACTION_NETWORK_OPERATOR_SETTINGS);
-		final DialogInterface.OnClickListener cancelDialog = new CancelDialogOnClickListener();
+		if (networkWarningDialog == null) {
 
-		final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setCancelable(false).setTitle(getString(R.string.helper_network_disabled_title))
-				.setMessage(getString(R.string.helper_network_disabled_message))
-				.setPositiveButton(getString(R.string.helper_network_disabled_settings), loadSettings)
-				.setNegativeButton(getString(R.string.helper_network_disabled_cancel), cancelDialog);
+			final DialogInterface.OnClickListener loadSettings = new StartActivityOnClickListener(this,
+					android.provider.Settings.ACTION_NETWORK_OPERATOR_SETTINGS);
+			final DialogInterface.OnClickListener cancelDialog = new CancelDialogOnClickListener();
 
-		final AlertDialog alert = builder.create();
-		alert.show();
-	}
+			final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setCancelable(false).setTitle(getString(R.string.helper_network_disabled_title))
+					.setMessage(getString(R.string.helper_network_disabled_message))
+					.setPositiveButton(getString(R.string.helper_network_disabled_settings), loadSettings)
+					.setNegativeButton(getString(R.string.helper_network_disabled_cancel), cancelDialog);
 
-	/**
-	 * Check if gps provider is Disabled
-	 * 
-	 * @return {@code true} if disabled, {@code false} if enabled.
-	 */
-	protected boolean isGPSProviderDisabled() {
-		return !locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-	}
+			networkWarningDialog = builder.create();
+		}
 
-	/**
-	 * Check if network provider is Disabled
-	 * 
-	 * @return {@code true} if disabled, {@code false} if enabled.
-	 */
-	protected boolean isNetworkProviderDisabled() {
-		return !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+		return networkWarningDialog;
 	}
 }
