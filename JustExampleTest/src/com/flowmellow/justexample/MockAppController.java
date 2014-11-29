@@ -11,6 +11,7 @@ public class MockAppController extends BasicAppController {
 
 	private boolean isGPSProviderDisabled = false;
 	private boolean isNetworkProviderDisabled = false;
+	private String postCodePassedInToService;
 
 	public MockAppController(Context context) {
 		super(context);
@@ -37,6 +38,8 @@ public class MockAppController extends BasicAppController {
 	public void restaurantServiceConnection(RestaurantListener restaurantListener, String postcode) {
 		Log.i(Config.LOG_TAG, "restaurantServiceConnection");
 
+		postCodePassedInToService = postcode;
+		
 		if (postcode.equals(LocationUtil.POSTCODE)) {
 			restaurantListener.displayRestaurants(RestaurantUtil.getMockRestaurants());
 		}
@@ -63,6 +66,10 @@ public class MockAppController extends BasicAppController {
 
 	public void setNetworkProviderDisabled(boolean isNetworkProviderDisabled) {
 		this.isNetworkProviderDisabled = isNetworkProviderDisabled;
+	}
+
+	public String getPostCodePassedInToService() {
+		return postCodePassedInToService;
 	}
 
 }

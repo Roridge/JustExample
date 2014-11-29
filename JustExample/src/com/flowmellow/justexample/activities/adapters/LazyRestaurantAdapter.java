@@ -30,7 +30,7 @@ public class LazyRestaurantAdapter extends BaseAdapter {
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
-		
+
 		final RestaurantTO restaurantTO = restaurants.get(position);
 		final ViewGroup noParent = null;
 		final View view = (convertView != null) ? convertView : inflater.inflate(R.layout.restaurant_detail_view, noParent);
@@ -39,12 +39,13 @@ public class LazyRestaurantAdapter extends BaseAdapter {
 		final TextView numberOfRatingsTextView = (TextView) view.findViewById(R.id.numberOfRatingsTextView);
 		final RatingBar restaurantRatingBar = (RatingBar) view.findViewById(R.id.restaurantRatingBar);
 		final ImageView restaurantLogoImageView = (ImageView) view.findViewById(R.id.restaurantLogoImageView);
-		
+
 		restaurantNameTextView.setText(restaurantTO.getName());
-		numberOfRatingsTextView.setText(String.format(context.getString(R.string.number_of_ratings_format), restaurantTO.getNumberOfRatings()));
+		numberOfRatingsTextView.setText(String.format(context.getString(R.string.number_of_ratings_format),
+				restaurantTO.getNumberOfRatings()));
 		restaurantRatingBar.setRating(restaurantTO.getRatingStars());
 		imageLoader.displayImage(restaurantLogoImageView, restaurantTO.getUrl());
-		
+
 		return view;
 	}
 
@@ -52,12 +53,23 @@ public class LazyRestaurantAdapter extends BaseAdapter {
 		return restaurants.size();
 	}
 
-	public Object getItem(int position) {
-		return restaurants.get(position);
+	public RestaurantTO getItem(int position) {
+		RestaurantTO restaurantTO = null;
+
+		if (restaurants.size() > position) {
+			restaurantTO = restaurants.get(position);
+		}
+
+		return restaurantTO;
 	}
 
 	public long getItemId(int position) {
-		//TODO give item an id.
-		return position;
+		long id = -1;
+		final RestaurantTO restaurantTO = getItem(position);
+
+		if (restaurantTO != null) {
+			id = restaurantTO.getId();
+		}
+		return id;
 	}
 }

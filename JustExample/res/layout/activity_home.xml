@@ -3,13 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ProgressBar
-        android:id="@+id/locationProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone" />
-
     <RelativeLayout
         android:id="@+id/search"
         android:layout_width="match_parent"
@@ -31,7 +24,8 @@
                 android:layout_weight="9"
                 android:ems="10"
                 android:inputType="text"
-                android:textSize="19sp" />
+                android:textSize="19sp"
+                android:hint="@string/hint_enter_postcode" />
 
             <ImageButton
                 android:id="@+id/locationImageButton"
@@ -52,5 +46,13 @@
             android:scaleType="fitCenter"
             android:src="@drawable/search" />
     </RelativeLayout>
+    
+    <ProgressBar
+        android:id="@+id/locationProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dip"
+        android:layout_below="@id/search"
+        android:visibility="gone" />
 
 </RelativeLayout>

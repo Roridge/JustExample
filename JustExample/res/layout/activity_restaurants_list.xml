@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
 
     <ProgressBar
         android:id="@+id/restaurantProgressBar"
@@ -13,8 +12,33 @@
 
     <ListView
         android:id="@+id/restaurantList"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout
+        android:id="@+id/noRestaurantsRelativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_margin="25dip"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/noRestaurantsHelperTextView"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:layout_alignParentTop="true"
+            android:text="@string/helper_no_restaurants_found"
+            android:gravity="center"
+            android:contentDescription="@string/search_button_description" />
+
+        <Button
+            android:id="@+id/searchAgainButton"
+            android:layout_width="match_parent"
+            android:layout_height="50dip"
+            android:layout_centerInParent="true"
+            android:text="@string/helper_no_restaurants_found_button"
+            android:contentDescription="@string/search_button_description" />
+    </RelativeLayout>
 
 </RelativeLayout>
-

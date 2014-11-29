@@ -15,6 +15,7 @@ import com.flowmellow.justexample.MockAppController;
 import com.flowmellow.justexample.R;
 import com.flowmellow.justexample.TestUtil;
 import com.flowmellow.justexample.LocationUtil;
+import com.flowmellow.justexample.Config;
 
 public class HomeActivityTest extends AbstractActivityInstrumentationTestCase2<HomeActivity> {
 
@@ -113,6 +114,30 @@ public class HomeActivityTest extends AbstractActivityInstrumentationTestCase2<H
 	}
 
 	@LargeTest
+	public void testLongStringIsNotPassedToService() throws Throwable {
+		final ActivityMonitor activityMonitor = getInstrumentation().addMonitor(RestaurantsActivity.class.getName(), null, false);
+		ActivityUtil.setText(this, searchEditText, TestUtil.EXTRA_LONG_STRING);
+		ActivityUtil.clickView(this, searchImageButton);
+		final RestaurantsActivity restaurantsActivity = (RestaurantsActivity) getInstrumentation().waitForMonitorWithTimeout(activityMonitor, TIMEOUT);
+		String postCodePassedInToService = TestUtil.EXTRA_LONG_STRING;
+		
+		for(int i = 0; i < 10; i ++) {
+			postCodePassedInToService = mockAppController.getPostCodePassedInToService();
+			
+			if(postCodePassedInToService == null) {
+				delay();
+			} else {
+				return;
+			}
+		}
+		final int postCodeLength = postCodePassedInToService.length();
+		final int actaulPostCodeLength = TestUtil.EXTRA_LONG_STRING.length();
+		final String errorMessage = "The Postcode passed in was longer than we expected, the postcode entered by the 'user' was %d characters long the result was %d characters long";
+		assertTrue(String.format(errorMessage, actaulPostCodeLength, postCodeLength), postCodeLength <= Config.MAX_POSTCODE_LENGTH);
+		restaurantsActivity.finish();
+	}
+
+	@LargeTest
 	public void testRestuarantActivityIsStartedOnSearchWithPostCode() throws Throwable {
 		final ActivityMonitor activityMonitor = getInstrumentation().addMonitor(RestaurantsActivity.class.getName(), null, false);
 		ActivityUtil.setText(this, searchEditText, LocationUtil.POSTCODE);
@@ -147,7 +172,15 @@ public class HomeActivityTest extends AbstractActivityInstrumentationTestCase2<H
 				}
 			});
 		} catch (Throwable e) {
-			Log.e(com.flowmellow.justexample.Config.LOG_TAG, "couldn't call activiy onCreate");
+			Log.e(Config.LOG_TAG, "couldn't call activiy onCreate");
+		}
+	}
+	
+	private void delay() {
+		try {
+			Thread.sleep(200);
+		} catch (InterruptedException e) {
+			Log.e(Config.LOG_TAG, "couldn't call activiy onCreate");
 		}
 	}
 
