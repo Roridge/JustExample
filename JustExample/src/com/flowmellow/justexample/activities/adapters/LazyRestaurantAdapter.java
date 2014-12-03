@@ -24,7 +24,7 @@ public class LazyRestaurantAdapter extends BaseAdapter {
 
 	public LazyRestaurantAdapter(final Context context, final List<RestaurantTO> restaurants) {
 		this.context = context;
-		this.restaurants = restaurants;
+		this.restaurants = restaurants; // TODO defensivly program to avoid null being passed in
 		this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.imageLoader = new ImageLoader();
 	}
@@ -52,24 +52,14 @@ public class LazyRestaurantAdapter extends BaseAdapter {
 	public int getCount() {
 		return restaurants.size();
 	}
-
+	// TODO  document to return null and simplfy
 	public RestaurantTO getItem(int position) {
-		RestaurantTO restaurantTO = null;
-
-		if (restaurants.size() > position) {
-			restaurantTO = restaurants.get(position);
-		}
-
-		return restaurantTO;
+		return (restaurants.size() > position) ? restaurants.get(position) : null;
 	}
 
 	public long getItemId(int position) {
-		long id = -1;
+		// TODO simplifed
 		final RestaurantTO restaurantTO = getItem(position);
-
-		if (restaurantTO != null) {
-			id = restaurantTO.getId();
-		}
-		return id;
+		return (restaurantTO != null) ? id = restaurantTO.getId() S -1;
 	}
 }
