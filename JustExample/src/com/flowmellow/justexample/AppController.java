@@ -3,7 +3,7 @@ package com.flowmellow.justexample;
 import com.flowmellow.justexample.activities.listeners.CustomLocationListener;
 import com.flowmellow.justexample.activities.listeners.RestaurantListener;
 import com.google.android.gms.location.LocationClient;
-
+// TODO I would expect to see JavaDoc here and all the methods.
 public interface AppController {
 
 	public void requestPostcode(CustomLocationListener customLocationListener);
