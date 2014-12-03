@@ -69,12 +69,12 @@ public class RestaurantsActivity extends Activity implements RestaurantListener,
 	public void onClick(View v) {
 
 		switch (v.getId()) {
-
-		case R.id.searchAgainButton:
+		// TODO indentation (could be that GitHub is rendering tabs instead of spaces yuk)
+		    case R.id.searchAgainButton:
 			onBackPressed();
 			break;
 
-		default:
+		    default:
 			// do nothing
 			break;
 		}
