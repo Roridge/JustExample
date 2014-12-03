@@ -17,7 +17,7 @@ public class Config {
 	 */
 	public static final int PERCENTAGE_OF_FREE_MEMORY_TO_CLEAR_CACHE = 2;
 
-	public static final void setHeaders(HttpUriRequest httpget) {
+	public static final void setHeaders(HttpUriRequest httpget) { // TODO Final is redundnant on a static method
 		httpget.setHeader("Accept-Tenant", "uk");
 		httpget.setHeader("Accept-Language", "en-GB");
 		httpget.setHeader("Accept-Charset", "utf-8");
