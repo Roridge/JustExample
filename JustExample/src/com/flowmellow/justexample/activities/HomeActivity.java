@@ -85,16 +85,16 @@ public class HomeActivity extends Activity implements OnClickListener, CustomLoc
 	public void onClick(View v) {
 
 		switch (v.getId()) {
-
-		case R.id.locationImageButton:
+		// TODO Fix indentation
+		    case R.id.locationImageButton:
 			requestPostcode();
 			break;
 
-		case R.id.searchImageButton:
-			requestRestaurantsByLocation();
+	            case R.id.searchImageButton:
+		        requestRestaurantsByLocation();
 			break;
 
-		default:
+		    default:
 			// do nothing
 			break;
 		}
@@ -102,16 +102,16 @@ public class HomeActivity extends Activity implements OnClickListener, CustomLoc
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+		// TODO this nested switch state ment is pretty icky
 		switch (requestCode) {
 
-		case CONNECTION_FAILURE_RESOLUTION_REQUEST:
+	            case CONNECTION_FAILURE_RESOLUTION_REQUEST:
 
 			switch (resultCode) {
-
-			/* If the result code is Activity.RESULT_OK, try to connect again */
-			case Activity.RESULT_OK:
-
+	
+			    /* If the result code is Activity.RESULT_OK, try to connect again */
+			    case Activity.RESULT_OK:
+	
 				if (!isLocationClientConnected) {
 					controller.locationServiceConnection(locationClient);
 				}
@@ -131,7 +131,7 @@ public class HomeActivity extends Activity implements OnClickListener, CustomLoc
 				connectionResult.startResolutionForResult(this, CONNECTION_FAILURE_RESOLUTION_REQUEST);
 			} catch (IntentSender.SendIntentException e) {
 				Log.w(Config.LOG_TAG, "Google Play services has cancelled the orignal PendingIntent " + e.getMessage());
-				e.printStackTrace();
+				e.printStackTrace(); // TODO comment out in production code.
 			}
 		}
 	}
