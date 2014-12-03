@@ -8,7 +8,7 @@ import com.google.android.gms.location.LocationClient;
 
 import android.content.Context;
 import android.location.LocationManager;
-
+// TODO I would expect to see JavaDoc here
 public class BasicAppController implements AppController {
 
 	private LocationServiceConnector locationServiceConnector;
@@ -46,7 +46,7 @@ public class BasicAppController implements AppController {
 		restaurantServiceConnector.unbindFromService();
 	}
 
-	/**
+	/** // TODO I would expect this not to be here unless it was different.
 	 * Check if gps provider is Disabled
 	 * 
 	 * @return {@code true} if disabled, {@code false} if enabled.
